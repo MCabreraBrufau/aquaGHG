@@ -34,8 +34,13 @@ myauxfile$start.time <- as.POSIXct(myauxfile$start.time, tz = 'UTC', format="%d/
 
 
 # plot incubations overview
-print(plot.incubations(mydata_all))
+p <- plot.incubations(mydata_all)
+print(p)
+# to save these plots in a dedicated path, do
+# gg_save_pdf(list = p, path = , filename = "myfilename.pdf")
 
+mypath <- "C:/Users/Camille Minaudo/OneDrive - Universitat de Barcelona/Documentos/PROJECTS/RESTORE4Cs/AquaGHG_idea"
+gg_save_pdf(list = p, path = mypath, filename = "overview.pdf")
 
 
 # manual inspection of CO2 data and flux calculation
@@ -45,8 +50,8 @@ CO2_manID <- clickflux(dataframe = mydata_all, myauxfile = myauxfile,
                           plot.lim = c(200,1000),
                        fluxSeparation = F, displayPlots = T)
 
-# take a look at CH4 data and separate ebullition from diffusion
-p <- plot.fluxSeparation(dataframe = mydata_all, gastype = "CH4dry_ppb", kstar = 0.8)
+# take a look at CH4 data and identify possible ebullition events
+p <- plot.fluxSeparation(dataframe = mydata_all, gastype = "CH4dry_ppb", kstar = 0.4)
 print(p)
 
 CH4_manID <- clickflux(mydata_all = mydata_all, myauxfile = myauxfile,
