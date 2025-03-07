@@ -13,6 +13,7 @@
 #' @examples
 #'
 flux_separator <- function(my_incub, UniqueID, kstar, doPlot){
+  my_incub <- my_incub[which(my_incub$UniqueID==UniqueID),]
   mych4 <- data.frame(time = as.numeric(my_incub$POSIX.time-first(my_incub$POSIX.time)),
                       ch4 = my_incub$CH4dry_ppb)
 
