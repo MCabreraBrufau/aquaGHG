@@ -19,7 +19,7 @@ source(file = "R/automaticflux.R")
 source(file = "R/get_dxdy.R")
 source(file = "R/join_auxfile_with_data.loop.R")
 source(file = "R/plot.incubations.R")
-source(file = "R/find_linear_chunk.R")
+source(file = "R/find_first_linear_chunk.R")
 
 # Loading data
 mydata_all <- NULL

@@ -64,30 +64,13 @@ automaticflux <-  function(dataframe, myauxfile,
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
       separated.fluxes <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                                 list_of_dataframes = mydata_ow, gastype = gastype, kstar = 0.5)%>%
+                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile)%>%
         map_df(., ~as.data.frame(.x))
-
-      # Estimating ebullition component
-      for (id in separated.fluxes$UniqueID){
-        i <- which(separated.fluxes$UniqueID == id)
-
-        CH4_initial <-  separated.fluxes$C0[i]
-        CH4_final <- separated.fluxes$Ct[i]
-        incubation_time <- separated.fluxes$duration[i]
-        myflux.term <- flux_auto$flux.term[which(flux_auto$UniqueID == id)]
-        separated.fluxes$totalflux[i] <- (CH4_final-CH4_initial)/incubation_time*myflux.term # nmol/m2/s
-        separated.fluxes$diffusionflux[i] <-  separated.fluxes$avg_diff_slope[i]*myflux.term # nmol/m2/s
-        separated.fluxes$ebullitionflux[i] <- separated.fluxes$totalflux[i]  - separated.fluxes$diffusionflux[i] # total flux - diffusive term
-      }
-
-      best.flux_auto$totalflux <- separated.fluxes$totalflux
-      best.flux_auto$diffusionflux <- separated.fluxes$diffusionflux
-      best.flux_auto$ebullitionflux <- separated.fluxes$ebullitionflux
 
 
       if(displayPlots){
         p <- flux.plot(
-          flux.results = best.flux_auto, dataframe = mydata_auto,
+          flux.results = separated.fluxes, dataframe = mydata_auto,
           gastype = gastype, quality.check = TRUE,
           plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
           plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
@@ -96,52 +79,59 @@ automaticflux <-  function(dataframe, myauxfile,
       return(best.flux_auto)
     }
   } else if (method == "focus on linear"){
-        lin.chunks <- lapply(seq_along(mydata_ow), find_linear_chunk.loop,
-                             list_of_dataframe = mydata_ow, gastype = gastype, kstar = 0.4, which.chunk = "longest", length.min=30) %>%
-          map_df(., ~as.data.frame(.x))
 
-        # for each incubation, extract data selected at previous step
-        myauxfile_corr <- NULL
-        for(id in unique(myauxfile$UniqueID)){
-          myauxfile_corr.tmp <- myauxfile[myauxfile$UniqueID==id,]
-          ind <- which(lin.chunks$UniqueID==id)
-          myauxfile_corr.tmp$start.time <- lin.chunks$start.time[ind]
-          myauxfile_corr.tmp$obs.length <- lin.chunks$obs.length[ind]
-          myauxfile_corr.tmp$end.time <- lin.chunks$start.time[ind] + lin.chunks$obs.length[ind]
-          myauxfile_corr <- rbind(myauxfile_corr, myauxfile_corr.tmp)
-        }
-        mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
+    lin.chunks <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
+                         list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
+      map_df(., ~as.data.frame(.x))
 
-        # Join mydata_ow with info on start end incubation
-        mydiffusion_auto <- lapply(seq_along(mydata_ow_corr), join_auxfile_with_data.loop, flux.unique = mydata_ow_corr) %>%
-          map_df(., ~as.data.frame(.x))
 
-        # Calculate fluxes
-        flux_diffusion <- goFlux(mydiffusion_auto, gastype)
 
-        best.flux_diffusion <- best.flux(flux_diffusion, criteria)
+    # lin.chunks <- lapply(seq_along(mydata_ow), find_linear_chunk.loop,
+    #                      list_of_dataframe = mydata_ow, gastype = gastype, kstar = 0.4, which.chunk = "longest", length.min=30) %>%
+    #   map_df(., ~as.data.frame(.x))
 
-        if(displayPlots){
-          p <- flux.plot(
-            flux.results = best.flux_diffusion, dataframe = dataframe,
-            gastype = gastype, quality.check = TRUE,
-            plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
-            plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
-          print(p)
-        }
+    # for each incubation, extract data selected at previous step
+    myauxfile_corr <- NULL
+    for(id in unique(myauxfile$UniqueID)){
+      myauxfile_corr.tmp <- myauxfile[myauxfile$UniqueID==id,]
+      ind <- which(lin.chunks$UniqueID==id)
+      myauxfile_corr.tmp$start.time <- lin.chunks$start.time[ind]
+      myauxfile_corr.tmp$obs.length <- lin.chunks$obs.length[ind]
+      myauxfile_corr.tmp$end.time <- lin.chunks$start.time[ind] + lin.chunks$obs.length[ind]
+      myauxfile_corr <- rbind(myauxfile_corr, myauxfile_corr.tmp)
+    }
+    mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
 
-  #
-  #       # Estimating ebullition component
-  #       for (id in unique(best.flux_auto$UniqueID)){
-  #         i <- which(best.flux_auto$UniqueID == id)
-  #
-  #         CH4_initial <-  flux_manID$C0[i]
-  #         CH4_final <- flux_manID$Ct[i]
-  #         incubation_time <- myauxfile_corr$obs.length[which(myauxfile_corr$UniqueID == id)]
-  #         best.flux_auto$totalflux[i] <- (CH4_final-CH4_initial)/incubation_time*flux_manID$flux.term[i] # nmol/m2/s
-  #         best.flux_auto$ebullitionflux[i] <- best.flux_auto$totalflux[i]  - best.flux_auto$LM.flux_diffusion[i] # total flux - diffusive term
-  #         best.flux_auto$diffusionflux[i] <- best.flux_auto$LM.flux_diffusion[i]
-  #       }
+    # Join mydata_ow with info on start end incubation
+    mydiffusion_auto <- lapply(seq_along(mydata_ow_corr), join_auxfile_with_data.loop, flux.unique = mydata_ow_corr) %>%
+      map_df(., ~as.data.frame(.x))
+
+    # Calculate fluxes
+    flux_diffusion <- goFlux(mydiffusion_auto, gastype)
+
+    best.flux_diffusion <- best.flux(flux_diffusion, criteria)
+
+    if(displayPlots){
+      p <- flux.plot(
+        flux.results = best.flux_diffusion, dataframe = mydiffusion_auto,
+        gastype = gastype, quality.check = TRUE,
+        plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
+        plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
+      print(p)
+    }
+
+    #
+    #       # Estimating ebullition component
+    #       for (id in unique(best.flux_auto$UniqueID)){
+    #         i <- which(best.flux_auto$UniqueID == id)
+    #
+    #         CH4_initial <-  flux_manID$C0[i]
+    #         CH4_final <- flux_manID$Ct[i]
+    #         incubation_time <- myauxfile_corr$obs.length[which(myauxfile_corr$UniqueID == id)]
+    #         best.flux_auto$totalflux[i] <- (CH4_final-CH4_initial)/incubation_time*flux_manID$flux.term[i] # nmol/m2/s
+    #         best.flux_auto$ebullitionflux[i] <- best.flux_auto$totalflux[i]  - best.flux_auto$LM.flux_diffusion[i] # total flux - diffusive term
+    #         best.flux_auto$diffusionflux[i] <- best.flux_auto$LM.flux_diffusion[i]
+    #       }
   }
 
 }
