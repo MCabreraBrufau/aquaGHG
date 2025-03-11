@@ -6,21 +6,17 @@ flag_diffusion <- function(dataframe, kstar){
   # initialization
   dataframe$is_diffusion <- TRUE
 
-  mych4 <- data.frame(time = as.numeric(dataframe$POSIX.time-first(dataframe$POSIX.time)),
-                      ch4 = dataframe$CH4dry_ppb)
 
-  # smooth signal
-  ch4smooth <- smooth.spline(x = mych4$time, y = mych4$ch4, nknots = round(length(mych4$time)/3), spar = 0.6)
-  mych4$ch4smooth <- approx(ch4smooth$x, ch4smooth$y, xout = mych4$time, rule = 2)$y
-
-  # computing first derivative
-  mych4$dydt <- get_dxdy(mych4$time, mych4$ch4smooth)
+  # computing density probability of first derivative
+  d_df <- get_dCdt_density(dataframe)
+  d <- d_df[[1]]
+  mych4 <- d_df[[2]]
 
   # if dydt doesn't exceed 10 ppb/sec at any point, we consider ebullition is unlikely
   if(sum(mych4$dydt>10)>1){
 
     # computing density probability of first derivative
-    d <- density(mych4$dydt)
+    d <- d_df[[1]]
     half_dens_max <- kstar*max(d$y)
     ind_over_half_dens_max <- which(d$y>half_dens_max)
 

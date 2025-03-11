@@ -25,12 +25,12 @@ plot.incubations <- function(dataframe) {
   # FUNCTION STARTS ####
 
   # Define gas units
-  if(gastype == "CO2dry_ppm") gas.unit <- "ppm"
-  if(gastype == "CH4dry_ppb") gas.unit <- "ppb"
-  if(gastype == "N2Odry_ppb") gas.unit <- "ppb"
-  if(gastype == "COdry_ppb") gas.unit <- "ppb"
-  if(gastype == "NH3dry_ppb") gas.unit <- "ppb"
-  if(gastype == "H2O_ppm") gas.unit <- "ppm"
+  # if(gastype == "CO2dry_ppm") gas.unit <- "ppm"
+  # if(gastype == "CH4dry_ppb") gas.unit <- "ppb"
+  # if(gastype == "N2Odry_ppb") gas.unit <- "ppb"
+  # if(gastype == "COdry_ppb") gas.unit <- "ppb"
+  # if(gastype == "NH3dry_ppb") gas.unit <- "ppb"
+  # if(gastype == "H2O_ppm") gas.unit <- "ppm"
 
   # find out which variables are present in dataframe
   vars <- c("CO2dry_ppm", "CH4dry_ppb", "N2Odry_ppb", "COdry_ppb", "NH3dry_ppb", "H2O_ppm")
