@@ -10,15 +10,21 @@ cat("/014") # clear console
 library(tidyverse)
 library(egg)
 
-repo_root <- dirname(dirname(dirname(rstudioapi::getSourceEditorContext()$path)))
-files.sources = list.files(path = paste0(repo_root,"/R/functions/"), full.names = T)
-for (f in files.sources){source(f)}
+source("R/flag_diffusion.R")
+source("R/plot.fluxSeparation.R")
+source("R/get_dxdy.R")
 
+load(file = "data/data_example_2.RData")
+mydata$Etime <- as.numeric(mydata$Etime)
 
-setwd(repo_root)
-load(file = "data/data_example_3.RData")
+# take a look at CH4 data and identify possible ebullition events
+# user can play with kstar to be more or less permissive.
+# Note that kstar must be chosen between 0.1 and 0.9
+# kstar close to 0 is very permissive, close to 1 is very strict.
+p <- plot.fluxSeparation(dataframe = mydata, gastype = "CH4dry_ppb", kstar = 0.2)
+print(p)
 
-flagged <- flux_separator(my_incub = mydata, UniqueID = first(mydata$UniqueID),
-                          kstar = 0.6, doPlot = T)
+# get flag column in the dataframe mydata
+mydata$flag_diffusion <- flag_diffusion(dataframe = mydata, kstar = 0.1)
 
 

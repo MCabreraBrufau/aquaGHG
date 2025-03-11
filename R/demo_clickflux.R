@@ -39,9 +39,6 @@ print(p)
 # to save these plots in a dedicated path, do
 # gg_save_pdf(list = p, path = , filename = "myfilename.pdf")
 
-mypath <- "C:/Users/Camille Minaudo/OneDrive - Universitat de Barcelona/Documentos/PROJECTS/RESTORE4Cs/AquaGHG_idea"
-gg_save_pdf(list = p, path = mypath, filename = "overview.pdf")
-
 
 # manual inspection of CO2 data and flux calculation
 CO2_manID <- clickflux(dataframe = mydata_all, myauxfile = myauxfile,
