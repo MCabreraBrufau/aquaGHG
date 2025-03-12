@@ -6,7 +6,7 @@ find_linear_chunk <- function(dataframe, gastype, kstar = 0.4, which.chunk = "fi
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[2],]
 
   # computing density probability of first derivative
-  d_df <- get_dCdt_density(dataframe)
+  d_df <- get_dCdt_density(dataframe, gastype)
   d <- d_df[[1]]
   mydf <- d_df[[2]]
 

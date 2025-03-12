@@ -5,7 +5,7 @@
 
 
 
-flux.separator <- function(dataframe, gastype, auxfile){
+flux.separator <- function(dataframe, gastype, auxfile, criteria){
 
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[3],]
   id = unique(dataframe$UniqueID)
@@ -14,7 +14,7 @@ flux.separator <- function(dataframe, gastype, auxfile){
 
 
   # computing density probability of first derivative
-  d_df <- get_dCdt_density(dataframe)
+  d_df <- get_dCdt_density(dataframe, gastype)
   d <- d_df[[1]]
   mydf <- d_df[[2]]
 
@@ -80,10 +80,10 @@ flux.separator <- function(dataframe, gastype, auxfile){
   return(best.flux_auto)
 }
 
-flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile) {
+flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria) {
 
   # Function to apply in the loop. Adapt parameters to your needs.
-  best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile)
+  best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria)
 
   return(best.flux_auto)
 }
