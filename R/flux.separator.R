@@ -34,21 +34,12 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   delta_C <- last(mydf$concsmooth) - min(mydf$concsmooth)
   duration <- last(mydf$time)
 
-  df_out <- data.frame(UniqueID = unique(dataframe$UniqueID),
-                       duration = last(mydf$time),
-                       C0 = min(mydf$concsmooth),
-                       Ct = last(mydf$concsmooth),
-                       delta_conc = last(mydf$concsmooth) - min(mydf$concsmooth),
-                       avg_diff_slope = avg_slope,
-                       sd_diff_slope = sd_slope,
-                       start.time_diffusion = first_lin_chunk$start.time,
-                       duration_diffusion = first_lin_chunk$obs.length)
-
-  C0 = min(mydf$concsmooth)
-  Ct = last(mydf$concsmooth)
+  t.win <- 30
+  C0 = min(mydf$concsmooth[mydf$time<t.win])
+  Cf = max(mydf$concsmooth[mydf$time>max(mydf$time)-t.win])
   incubation_time = last(mydf$time)
 
-  # for each incubation, extract data selected at previous step
+  # for each incubation, extraCf data selected at previous step
   auxfile_corr <- auxfile[auxfile$UniqueID==id,]
   auxfile_corr$start.time <- first_lin_chunk$start.time
   auxfile_corr$obs.length <- first_lin_chunk$obs.length
@@ -73,16 +64,42 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   best.flux_auto <- best.flux_diffusion
   # names(best.flux_auto)[-1] <- paste0(names(best.flux_auto)[-1],"_diffusion")
 
-  best.flux_auto$total.flux <- (Ct-C0)/incubation_time*best.flux_diffusion$flux.term # nmol/m2/s
+  best.flux_auto$total.flux <- (Cf-C0)/incubation_time*best.flux_diffusion$flux.term # nmol/m2/s
   best.flux_auto$ebullition.flux <- best.flux_auto$total.flux - best.flux_diffusion$best.flux # nmol/m2/s
   best.flux_auto$diffusion.flux <- best.flux_diffusion$best.flux # nmol/m2/s
+
+
+  # Error propagation (expressed as SD)
+
+  deltaC0 <- sd(mydf$conc[mydf$time<t.win])
+  deltaCf <- sd(mydf$conc[mydf$time>max(mydf$time)-t.win])
+  deltaconcs = Cf-C0
+  SD_deltaconcs <- sqrt(deltaC0^2+deltaCf^2)
+  SD_total.flux <- abs(best.flux_auto$total.flux) * SD_deltaconcs/deltaconcs
+  if(best.flux_auto$model == "LM"){SE_diffusion.flux = best.flux_auto$LM.SE} else {SE_diffusion.flux = best.flux_auto$HM.SE}
+  SD_diffusion.flux <- best.flux_auto$LM.SE*sqrt(best.flux_auto$nb.obs)
+  SD_ebullition.flux <- sqrt(SD_diffusion.flux^2+SD_total.flux^2)
+
+  best.flux_auto$total.flux.SD <- SD_total.flux
+  best.flux_auto$diffusion.flux.SD <- SD_diffusion.flux
+  best.flux_auto$ebullition.flux.SD <- SD_ebullition.flux
+
+  # warnings
+  if( best.flux_auto$ebullition.flux < abs(best.flux_auto$diffusion.flux+best.flux_auto$diffusion.flux.SD)){
+    warning(paste0("for ",id, ", ebullition term is within range of uncertainty of diffusion."))
+  }
+
+  if( best.flux_auto$ebullition.flux < 0){
+    warning(paste0("for ",id, ", negative ebullition term. It was forced to 0."))
+    best.flux_auto$ebullition.flux <- 0
+  }
 
   return(best.flux_auto)
 }
 
 flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria) {
 
-  # Function to apply in the loop. Adapt parameters to your needs.
+  # function to apply in the loop. Adapt parameters to your needs.
   best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria)
 
   return(best.flux_auto)
