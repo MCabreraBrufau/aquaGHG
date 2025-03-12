@@ -72,7 +72,7 @@ automaticflux <-  function(dataframe, myauxfile,
           flux.results = best.flux_auto, dataframe = mydata_auto,
           gastype = gastype, quality.check = TRUE,
           plot.legend = c("SD"),
-          plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
+          plot.display = c("nb.obs"))
         print(p)
       }
     }

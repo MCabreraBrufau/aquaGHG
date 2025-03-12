@@ -88,6 +88,7 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   # warnings
   if( best.flux_auto$ebullition.flux < abs(best.flux_auto$diffusion.flux+best.flux_auto$diffusion.flux.SD)){
     warning(paste0("for ",id, ", ebullition term is within range of uncertainty of diffusion."))
+    best.flux_auto$quality.check <- "ebullition too low to be trusted"
   }
 
   if( best.flux_auto$ebullition.flux < 0){

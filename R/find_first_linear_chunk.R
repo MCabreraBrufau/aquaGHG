@@ -2,7 +2,7 @@
 
 find_first_linear_chunk <- function(dataframe, gastype, length.min){
 
-  # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[1],]
+  # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[3],]
 
   mydf <- data.frame(POSIX.time = dataframe$POSIX.time,
                      time = as.numeric(dataframe$POSIX.time-first(dataframe$POSIX.time)),
@@ -28,8 +28,14 @@ find_first_linear_chunk <- function(dataframe, gastype, length.min){
       ind_best <- which.max(df.stats$r2)
     } else {ind_best <- ind_bests[min(ind_not_1)-1]}
     t_selected <- df.stats$t[ind_best]
-    # plot(mydf$time, mydf$conc)
-    # points(mydf$time[mydf$time<=t_selected], mydf$conc[mydf$time<=t_selected], col='red')
+
+    # p_r2 <- ggplot(df.stats, aes(t, r2))+geom_point()+theme_article()+xlab("time [secs]")+
+    #   geom_vline(xintercept = t_selected, colour = "red")+xlim(c(0,t))+ggtitle("LM.r2 over a growing time window")
+    # p_conc <- ggplot(mydf, aes(time, conc))+geom_point()+theme_article()+
+    #   geom_point(data = mydf[mydf$time<=t_selected,], aes(time, conc), colour = "red")+
+    #   ggtitle(unique(dataframe$UniqueID))+geom_vline(xintercept = t_selected, colour = "red")
+    # ggarrange(p_conc, p_r2)+xlim(c(0,t))
+
     first_linear_chunk <- data.frame(UniqueID = unique(dataframe$UniqueID),
                                      start = 1,
                                      end = t_selected)

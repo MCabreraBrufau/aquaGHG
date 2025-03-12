@@ -153,8 +153,8 @@
 #' @export
 #'
 separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
-                      plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
-                      plot.display = c("MDF", "prec"),
+                      plot.legend = c("SD"),
+                      plot.display = c("prec"),
                       quality.check = TRUE, flux.unit = NULL,
                       flux.term.unit = NULL, best.model = TRUE,
                       p.val.disp = "round", side = "left") {
@@ -294,6 +294,7 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
         stop("'flux.term' in 'flux.results' must be of class numeric")}
     }
   }
+
   ## Check quality.check ####
   if(quality.check != TRUE & quality.check != FALSE){
     stop("'quality.check' must be TRUE or FALSE")}
@@ -324,6 +325,13 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
     nb.obs.display <- prec.display <-
     flux.term.display <- DATE <-
     legend.flux <- legend.SD <- GASTYPE <- NULL
+
+
+
+  # Hutchinson and Mosier model
+  HMmod <- function(Ci, C0, k, x){
+    Ci + (C0 - Ci) * exp(-k * x)
+  }
 
 
   # Function to find decimal places
@@ -512,6 +520,76 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
         x = xmax - xdiff*seq.x,
         y = ymax + ydiff*seq.y)
 
+
+    ## plot.display ####
+    if(!is.null(plot.display)){
+
+      ### NEW PLOT LIMITS with nb.obs, flux term and prec ####
+      if(any(grepl(paste(c("\\<nb.obs\\>", "\\<flux.term\\>", "\\<prec\\>"),
+                         collapse = "|"), plot.display))){
+        display.length <- length(grep(paste(c(
+          "\\<nb.obs\\>", "\\<flux.term\\>", "\\<prec\\>"),
+          collapse = "|"), plot.display))
+        if(display.length > 2) ymin <- ymin - ydiff*min(seq.y)*1.8
+        if(display.length <= 2) ymin <- ymin - ydiff*min(seq.y)*0.9
+      }
+      ### nb.obs ####
+      if(any(grepl("\\<nb.obs\\>", plot.display))){
+        # position
+        nb.obs.ord <- which(grep(paste(c("\\<nb.obs\\>",
+                                         "\\<flux.term\\>", "\\<prec\\>"), collapse = "|"),
+                                 plot.display, value = T) == "nb.obs")
+        if(nb.obs.ord == 1 | nb.obs.ord == 3) nb.obs.x <- 6
+        if(nb.obs.ord == 2 | nb.obs.ord == 4) nb.obs.x <- 3
+        if(nb.obs.ord <= 2) nb.obs.y <- -0.8
+        if(nb.obs.ord > 2) nb.obs.y <- 1.6
+        # value
+        nb.obs <- round(unique(data_corr[[f]]$nb.obs), 0)
+        # nb.obs.display
+        nb.obs.display <- annotate(
+          "text", x = seq(xmin, xmax, length.out=9)[nb.obs.x], colour = "black",
+          y = ymin - ydiff*max(seq.y)*nb.obs.y/2, hjust = 0,
+          label = paste(nb.obs, "~'data points used for diffusion'"), parse = TRUE, size = 3.2)
+      }
+
+      ### flux.term ####
+      if(any(grepl("\\<flux.term\\>", plot.display))){
+        # position
+        flux.term.ord <- which(grep(paste(c("\\<nb.obs\\>",
+                                            "\\<flux.term\\>", "\\<prec\\>"), collapse = "|"),
+                                    plot.display, value = T) == "flux.term")
+        if(flux.term.ord == 1 | flux.term.ord == 3) flux.term.x <- 6
+        if(flux.term.ord == 2 | flux.term.ord == 4) flux.term.x <- 3
+        if(flux.term.ord <= 2) flux.term.y <- -0.8
+        if(flux.term.ord > 2) flux.term.y <- 1.6
+        # value
+        flux.term <- round(unique(data_corr[[f]]$flux.term), 1)
+        # flux.term.display
+        flux.term.display <- annotate(
+          "text", x = seq(xmin, xmax, length.out=9)[flux.term.x], colour = "black",
+          y = ymin - ydiff*max(seq.y)*flux.term.y/2, hjust = 0, parse = TRUE,
+          label = paste("'flux.term ='~", flux.term, "~", flux.term.unit), size = 3.2)
+      }
+      ### prec ####
+      if(any(grepl("\\<prec\\>", plot.display))){
+        # position
+        prec.ord <- which(grep(paste(c("\\<nb.obs\\>",
+                                       "\\<flux.term\\>", "\\<prec\\>"), collapse = "|"),
+                               plot.display, value = T) == "prec")
+        if(prec.ord == 1 | prec.ord == 3) prec.x <- 6
+        if(prec.ord == 2 | prec.ord == 4) prec.x <- 3
+        if(prec.ord <= 2) prec.y <- -0.8
+        if(prec.ord > 2) prec.y <- 1.6
+        # value
+        prec <- unique(data_corr[[f]]$prec)
+        # prec.display
+        prec.display <- annotate(
+          "text", x = seq(xmin, xmax, length.out=9)[prec.x], colour = "black",
+          y = ymin - ydiff*max(seq.y)*prec.y/2, hjust = 0,
+          label = paste("'prec ='~", prec, "~", gas.unit), parse = TRUE, size = 3.2)
+      }
+    }
+
     ## Extract quality check ####
     if(quality.check == TRUE){
       # NEW PLOT LIMITS
@@ -522,8 +600,8 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
       # quality.check.display
       quality.check.display <- annotate(
         "text", x = seq(xmin, xmax, length.out=9)[2], colour = "black",
-        y = ymin - ydiff*min(seq.y)*0.9, hjust = 0, parse = TRUE, size = 3.2,
-        label = paste("'Quality check for diffusion term:'~", paste("'", quality, "'")))
+        y = ymin - ydiff*min(seq.y)*.9, hjust = 0, parse = TRUE, size = 3.2,
+        label = paste("'Quality check for diffusion:'~", paste("'", quality, "'")))
     }
 
     # Content of plot

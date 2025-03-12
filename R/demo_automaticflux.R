@@ -21,7 +21,6 @@ source(file = "R/get_dxdy.R")
 source(file = "R/join_auxfile_with_data.loop.R")
 source(file = "R/plot.incubations.R")
 source(file = "R/find_first_linear_chunk.R")
-source(file = "R/plot.fluxSeparation.R")
 source(file = "R/flag_diffusion.R")
 source(file = "R/get_dCdt_density.R")
 source(file = "R/flux.separator.R")
@@ -53,13 +52,6 @@ print(p)
 CO2_flux <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CO2dry_ppm",
                           fluxSeparation = F, displayPlots = T,
                           method = "focus.on.linear") # trust.it.all or focus.on.linear
-
-
-
-# take a look at CH4 data and identify possible ebullition events
-p <- plot.fluxSeparation(dataframe = mydata_all, gastype = "CH4dry_ppb", kstar = 0.4)
-print(p)
-
 
 # automatic inspection of CO2 data and flux calculation
 CH4_flux <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
