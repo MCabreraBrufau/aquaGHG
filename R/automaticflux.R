@@ -60,23 +60,21 @@ automaticflux <-  function(dataframe, myauxfile,
           plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
         print(p)
       }
-      return(best.flux_auto)
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
-      separated.fluxes <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile)%>%
+      best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
+                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, criteria)%>%
         map_df(., ~as.data.frame(.x))
 
 
       if(displayPlots){
         p <- flux.plot(
-          flux.results = separated.fluxes, dataframe = mydata_auto,
+          flux.results = best.flux_auto, dataframe = mydata_auto,
           gastype = gastype, quality.check = TRUE,
           plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
           plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
         print(p)
       }
-      return(best.flux_auto)
     }
   } else if (method == "focus.on.linear"){
 
@@ -109,30 +107,19 @@ automaticflux <-  function(dataframe, myauxfile,
     # Calculate fluxes
     flux_diffusion <- goFlux(mydiffusion_auto, gastype)
 
-    best.flux_diffusion <- best.flux(flux_diffusion, criteria)
+    best.flux_auto <- best.flux(flux_diffusion, criteria)
 
     if(displayPlots){
       p <- flux.plot(
-        flux.results = best.flux_diffusion, dataframe = mydata_auto,
+        flux.results = best.flux_auto, dataframe = mydata_auto,
         gastype = gastype, quality.check = TRUE,
         plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
         plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
       print(p)
     }
 
-    #
-    #       # Estimating ebullition component
-    #       for (id in unique(best.flux_auto$UniqueID)){
-    #         i <- which(best.flux_auto$UniqueID == id)
-    #
-    #         CH4_initial <-  flux_manID$C0[i]
-    #         CH4_final <- flux_manID$Ct[i]
-    #         incubation_time <- myauxfile_corr$obs.length[which(myauxfile_corr$UniqueID == id)]
-    #         best.flux_auto$totalflux[i] <- (CH4_final-CH4_initial)/incubation_time*flux_manID$flux.term[i] # nmol/m2/s
-    #         best.flux_auto$ebullitionflux[i] <- best.flux_auto$totalflux[i]  - best.flux_auto$LM.flux_diffusion[i] # total flux - diffusive term
-    #         best.flux_auto$diffusionflux[i] <- best.flux_auto$LM.flux_diffusion[i]
-    #       }
   }
 
+  return(best.flux_auto)
 }
 
