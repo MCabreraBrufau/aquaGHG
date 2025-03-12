@@ -29,37 +29,37 @@ automaticflux <-  function(dataframe, myauxfile,
      !is.numeric(dataframe[,gastype][[1]])){
     stop("The column that matches 'gastype' in 'dataframe' must be of class character")}
 
+  # list of criteria for model selection
+  criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
+
 
   mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
 
+  # Join mydata_ow with info on start end incubation
+  mydata_auto <- lapply(seq_along(mydata_ow), join_auxfile_with_data.loop, flux.unique = mydata_ow) %>%
+    map_df(., ~as.data.frame(.x))
+
+  # Additional auxiliary data required for flux calculation.
+  mydata_auto <- mydata_auto %>%
+    left_join(myauxfile %>% select(UniqueID, Area, Vtot, Tcham, Pcham))
+
   if (method == "trust.it.all"){
-
-    # Join mydata_ow with info on start end incubation
-    mydata_auto <- lapply(seq_along(mydata_ow), join_auxfile_with_data.loop, flux.unique = mydata_ow) %>%
-      map_df(., ~as.data.frame(.x))
-
-    # Additional auxiliary data required for flux calculation.
-    mydata_auto <- mydata_auto %>%
-      left_join(myauxfile %>% select(UniqueID, Area, Vtot, Tcham, Pcham))
-
-    # Calculate fluxes
-    flux_auto <- goFlux(dataframe = mydata_auto, gastype)
-
-    # Use best.flux to select the best flux estimates (LM or HM)
-    # based on a list of criteria
-    criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
-    best.flux_auto <- best.flux(flux_auto, criteria)
-
-    if(displayPlots){
-      p <- flux.plot(
-        flux.results = best.flux_auto, dataframe = mydata_auto,
-        gastype = gastype, quality.check = TRUE,
-        plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
-        plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
-      print(p)
-    }
-
     if(!fluxSeparation){
+      # Calculate fluxes
+      flux_auto <- goFlux(dataframe = mydata_auto, gastype)
+
+      # Use best.flux to select the best flux estimates (LM or HM)
+      # based on a list of criteria
+      best.flux_auto <- best.flux(flux_auto, criteria)
+
+      if(displayPlots){
+        p <- flux.plot(
+          flux.results = best.flux_auto, dataframe = mydata_auto,
+          gastype = gastype, quality.check = TRUE,
+          plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
+          plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
+        print(p)
+      }
       return(best.flux_auto)
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
@@ -78,7 +78,7 @@ automaticflux <-  function(dataframe, myauxfile,
       }
       return(best.flux_auto)
     }
-  } else if (method == "focus on linear"){
+  } else if (method == "focus.on.linear"){
 
     lin.chunks <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
                          list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
@@ -113,7 +113,7 @@ automaticflux <-  function(dataframe, myauxfile,
 
     if(displayPlots){
       p <- flux.plot(
-        flux.results = best.flux_diffusion, dataframe = mydiffusion_auto,
+        flux.results = best.flux_diffusion, dataframe = mydata_auto,
         gastype = gastype, quality.check = TRUE,
         plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
         plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))

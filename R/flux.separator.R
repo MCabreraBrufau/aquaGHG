@@ -8,7 +8,7 @@
 flux.separator <- function(dataframe, gastype, auxfile){
 
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[3],]
-
+  id = unique(dataframe$UniqueID)
 
   first_lin_chunk <- find_first_linear_chunk(dataframe = dataframe, gastype = gastype, length.min=30)
 
@@ -17,6 +17,8 @@ flux.separator <- function(dataframe, gastype, auxfile){
   d_df <- get_dCdt_density(dataframe)
   d <- d_df[[1]]
   mydf <- d_df[[2]]
+
+  kstar = 0.5
 
   half_dens_max <- kstar*max(d$y)
   ind_over_half_dens_max <- which(d$y>half_dens_max)
