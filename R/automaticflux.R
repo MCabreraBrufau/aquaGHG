@@ -78,15 +78,14 @@ automaticflux <-  function(dataframe, myauxfile,
     }
   } else if (method == "focus.on.linear"){
 
+    if(fluxSeparation){
+      warning("fluxSeparation ignored because method was set to 'focus.on.linear' and discards non-linear patterns in the observations.
+... Change 'method' to 'trust.it.all' to activate fluxSeparation.")
+      }
+
     lin.chunks <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
                          list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
       map_df(., ~as.data.frame(.x))
-
-
-
-    # lin.chunks <- lapply(seq_along(mydata_ow), find_linear_chunk.loop,
-    #                      list_of_dataframe = mydata_ow, gastype = gastype, kstar = 0.4, which.chunk = "longest", length.min=30) %>%
-    #   map_df(., ~as.data.frame(.x))
 
     # for each incubation, extract data selected at previous step
     myauxfile_corr <- NULL
