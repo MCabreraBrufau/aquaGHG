@@ -14,6 +14,7 @@ library(goFlux)
 library(devtools)
 library(zoo)
 library(pbapply)
+library(ggnewscale)
 
 source(file = "R/automaticflux.R")
 source(file = "R/get_dxdy.R")
@@ -24,6 +25,7 @@ source(file = "R/plot.fluxSeparation.R")
 source(file = "R/flag_diffusion.R")
 source(file = "R/get_dCdt_density.R")
 source(file = "R/flux.separator.R")
+source(file = "R/separated.flux.plot.R")
 
 # Loading data
 mydata_all <- NULL

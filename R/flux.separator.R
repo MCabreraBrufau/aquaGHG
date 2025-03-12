@@ -7,7 +7,7 @@
 
 flux.separator <- function(dataframe, gastype, auxfile, criteria){
 
-  # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[3],]
+  # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[2],]
   id = unique(dataframe$UniqueID)
 
   first_lin_chunk <- find_first_linear_chunk(dataframe = dataframe, gastype = gastype, length.min=30)
@@ -68,9 +68,10 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   best.flux_auto$ebullition.flux <- best.flux_auto$total.flux - best.flux_diffusion$best.flux # nmol/m2/s
   best.flux_auto$diffusion.flux <- best.flux_diffusion$best.flux # nmol/m2/s
 
+  # adding information of data used for diffusion model
+  best.flux_auto$obs.length_diffusion <- first_lin_chunk$obs.length
 
   # Error propagation (expressed as SD)
-
   deltaC0 <- sd(mydf$conc[mydf$time<t.win])
   deltaCf <- sd(mydf$conc[mydf$time>max(mydf$time)-t.win])
   deltaconcs = Cf-C0
@@ -92,6 +93,11 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   if( best.flux_auto$ebullition.flux < 0){
     warning(paste0("for ",id, ", negative ebullition term. It was forced to 0."))
     best.flux_auto$ebullition.flux <- 0
+  }
+
+  if( best.flux_auto$diffusion.flux > best.flux_auto$total.flux){
+    warning(paste0("for ",id, ", diffusion term is larger than total flux estimated."))
+    best.flux_auto$quality.check <- "diffusion > total flux"
   }
 
   return(best.flux_auto)

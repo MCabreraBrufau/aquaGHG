@@ -68,10 +68,10 @@ automaticflux <-  function(dataframe, myauxfile,
 
 
       if(displayPlots){
-        p <- flux.plot(
+        p <- separated.flux.plot(
           flux.results = best.flux_auto, dataframe = mydata_auto,
           gastype = gastype, quality.check = TRUE,
-          plot.legend = c("MAE", "AICc", "k.ratio", "g.factor"),
+          plot.legend = c("SD"),
           plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
         print(p)
       }

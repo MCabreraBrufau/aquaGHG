@@ -20,10 +20,10 @@ find_first_linear_chunk <- function(dataframe, gastype, length.min){
     message("... no linear chunk could be found, the entire incubation was selected")
     first_linear_chunk <- data.frame(UniqueID = unique(dataframe$UniqueID),
                                      start = 1,
-                                     end = t)
+                                     end = length(mydf$conc))
   } else {
     ind_bests <- which(df.stats$r2>quantile(df.stats$r2, 0.9) & df.stats$pval<0.05)
-    ind_not_1 <- which(diff(ind_bests)!=1)
+    ind_not_1 <- which(diff(ind_bests)>10)
     if(length(ind_not_1)==0){
       ind_best <- which.max(df.stats$r2)
     } else {ind_best <- ind_bests[min(ind_not_1)-1]}
