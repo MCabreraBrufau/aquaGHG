@@ -33,7 +33,7 @@ clickflux <- function(dataframe, myauxfile,
 
 
 
-
+  # ----------------------- Function starts here -------------------------###
 
   n_incubations <- length(unique(dataframe$UniqueID))
 
@@ -83,10 +83,15 @@ clickflux <- function(dataframe, myauxfile,
                                       gastype = gastype,
                                       plot.lim = plot.lim)
 
-    linear_chunk <- data.frame(UniqueID = unique(mydata_diffusionID$UniqueID),
-                               start.time = unique(mydata_diffusionID$start.time),
-                                end = unique(mydata_diffusionID$end.time_corr))
-    linear_chunk$obs.length <- as.numeric(linear_chunk$end) - as.numeric(linear_chunk$start)
+    # for each incubation, extract data selected at previous step
+    linear_chunk <- NULL
+    for(id in unique(mydata_diffusionID$UniqueID)){
+      linear_chunk.tmp <- data.frame(UniqueID = id,
+                                 start.time = unique(mydata_diffusionID$start.time[mydata_diffusionID$UniqueID==id]),
+                                 end = unique(mydata_diffusionID$end.time_corr[mydata_diffusionID$UniqueID==id]))
+      linear_chunk.tmp$obs.length <- as.numeric(linear_chunk.tmp$end) - as.numeric(linear_chunk.tmp$start)
+      linear_chunk <- rbind(linear_chunk, linear_chunk.tmp)
+    }
 
     best.flux_manID <- lapply(seq_along(mydata_ow_corr), flux.separator.loop,
                              list_of_dataframes = mydata_ow_corr, gastype = gastype, auxfile = myauxfile, linear_chunk = linear_chunk, criteria)%>%

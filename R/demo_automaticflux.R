@@ -60,9 +60,15 @@ CH4_flux.auto <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, sh
                           method = "trust.it.all") # trust.it.all or focus.on.linear
 
 
-# manual inspection of CH4 data and flux calculation
+# manual inspection of CH4 data and flux calculation, to enable comparison with automatic flux calculation
 CH4_flux.manual <- clickflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
                       plot.lim = c(1800,max(mydata_all$CH4dry_ppb)), fluxSeparation = T, displayPlots = T)
 
-
+tab_ebullition_comparison <- data.frame(ID = CH4_flux.auto$UniqueID,
+                                        Automatic = CH4_flux.auto$ebullition.flux,
+                                        Manual = CH4_flux.manual$ebullition.flux,
+                                        Automatic_SD = CH4_flux.auto$ebullition.flux.SD,
+                                        Manual.SD = CH4_flux.manual$ebullition.flux.SD)
+message("Table for Ebullition Flux")
+print(tab_ebullition_comparison)
 
