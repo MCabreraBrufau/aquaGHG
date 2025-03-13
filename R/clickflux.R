@@ -8,15 +8,27 @@ clickflux <- function(dataframe, myauxfile,
                       gastype, plot.lim,
                       fluxSeparation,
                       displayPlots){
-  ## Check arguments ####
-  if(is.null(shoulder)) stop("'shoulder' is required") else{
-    if(!is.numeric(shoulder)) stop("'shoulder' must be of class numeric") else{
-      if(shoulder < 0) stop("'shoulder' cannot be a negative value")}}
+
+  # ----------------------- Check arguments -------------------------###
 
   ## Check dataframe ####
   if(missing(dataframe)) stop("'dataframe' is required")
   if(!is.null(dataframe) & !is.data.frame(dataframe)){
     stop("'dataframe' must be of class data.frame")}
+
+  ## Check myauxfile ####
+  if(missing(myauxfile)) stop("'myauxfile' is required")
+  if(!is.null(myauxfile) & !is.data.frame(myauxfile)){
+    stop("'myauxfile' must be of class data.frame")}
+
+  ### Is there any match between dataframe and myauxfile?
+  if(!any(unique(dataframe$UniqueID) %in% unique(myauxfile$UniqueID))){
+    stop("'UniqueID' in 'myauxfile' has no match for 'UniqueID' in 'dataframe'")}
+
+  ## Check shoulder ####
+  if(is.null(shoulder)) stop("'shoulder' is required") else{
+    if(!is.numeric(shoulder)) stop("'shoulder' must be of class numeric") else{
+      if(shoulder < 0) stop("'shoulder' cannot be a negative value")}}
 
   ### gastype and match in dataframe ####
   if(missing(gastype)) stop("'gastype' is required")
@@ -28,8 +40,30 @@ clickflux <- function(dataframe, myauxfile,
     stop("'dataframe' must contain a column that matches 'gastype'")}
   if(any(grepl(paste("\\<", gastype, "\\>", sep = ""), names(dataframe))) &
      !is.numeric(dataframe[,gastype][[1]])){
-    stop("The column that matches 'gastype' in 'dataframe' must be of class numeric")}
+    stop("The column that matches 'gastype' in 'dataframe' must be of class character")}
 
+  if(!is.numeric(plot.lim) | length(plot.lim) != 2){
+    stop("'plot.lim' must be numeric and of length 2")}
+  if(!is.numeric(warn.length)) {stop("'warn.length' must be of class numeric")
+  } else {if(warn.length <= 0) stop("'warn.length' must be greater than 0")}
+  if(!is.null(save.plots)){
+    if(!is.character(save.plots)) stop("'save.plot' must be a character string")}
+
+  ## Check fluxSeparation ####
+  if(missing(fluxSeparation)) {
+    fluxSeparation = FALSE
+    warning("in automaticflux(), 'fluxSeparation' was not provided and automatically set to FALSE")
+  }
+  if(fluxSeparation != TRUE & fluxSeparation != FALSE){
+    stop("'fluxSeparation' must be TRUE or FALSE")}
+
+  ## Check displayPlots ####
+  if(missing(displayPlots)) {
+    displayPlots = FALSE
+    warning("in automaticflux(), 'displayPlots' was not provided and automatically set to FALSE")
+  }
+  if(displayPlots != TRUE & displayPlots != FALSE){
+    stop("'displayPlots' must be TRUE or FALSE")}
 
 
 
