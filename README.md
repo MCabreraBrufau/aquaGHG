@@ -72,12 +72,12 @@ separates diffusive linear patterns from abrupt and highly non-linear ebullition
 linear chunk in the incubation time series which is used to calculate diffusion. The total flux is calculated by calculating the total
 concentration change inside the chamber over the incubation time, and ebullition is then calculated by difference:
 
-$$\mathbf{Eqn~1}~~~~~~Ebullition = Total - Fiffusion$$
+$$\mathbf{Eqn~1}~~~~~~Ebullition = Total - Diffusion$$
 
 ## Flux calculation
 
-**Diffusive** fluxes are calculated with the `goFlux` functions. In brief, 
-the function `goFlux` calculates fluxes from a variety of greenhouse
+**Diffusive** fluxes are calculated with the [`goFlux` R package](https://joss.theoj.org/papers/10.21105/joss.06393). 
+In brief, the function `goFlux` calculates fluxes from a variety of greenhouse
 gases (CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O, NH<sub>3</sub>,
 CO, and H<sub>2</sub>O) using both linear (LM) and non-linear (HM;
 [Hutchinson and Mosier,
