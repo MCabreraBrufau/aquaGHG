@@ -38,6 +38,8 @@ clickflux <- function(dataframe, myauxfile,
   n_incubations <- length(unique(dataframe$UniqueID))
 
   mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
+
+  message("... Please click on start and end points of VALID OBSERVATIONS")
   mydata_manID <- click.peak2(mydata_ow, seq = seq(1,n_incubations),
                               gastype = gastype,
                               plot.lim = plot.lim)
@@ -64,7 +66,7 @@ clickflux <- function(dataframe, myauxfile,
 
     return(best.flux_manID)
   } else { # in  that case we proceed with the separation between diffusion and ebullition
-    message("Please now select diffusion patterns only")
+    message("... Please now select DIFFUSION patterns only")
 
     # for each incubation, extract data selected at previous step
     myauxfile_corr <- NULL
