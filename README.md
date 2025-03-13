@@ -1,22 +1,30 @@
 # aquaGHG
-## an R package for reproducible calculation of GHG fluxes from static or floating chamber measurements in aquatic ecosystems
+# an R package for reproducible calculation of GHG fluxes from static or floating chamber measurements in aquatic ecosystems
 
 
 ## About the package
 
-`aquaGHG` is an easy-to-use and generic R package with the objective to provide reproducible calculation of GHG fluxes from static or floating chamber measurements in aquatic ecosystems. 
-It uses the `goFlux` R package (https://github.com/Qepanna/goFlux) to import raw measuements. Look up [this webpage](https://qepanna.quarto.pub/goflux/) for a
+`aquaGHG` is an easy-to-use and generic R package with the objective to provide reproducible 
+calculation of GHG fluxes from static or floating chamber measurements in aquatic ecosystems. 
+It uses the `goFlux` R package (https://github.com/Qepanna/goFlux) to import raw measuements.
+Look up [this webpage](https://qepanna.quarto.pub/goflux/) for a
 demonstration of the `goFlux` package usage.
 Then, mainly provides two options:
-- manually inspect the user's selection of incubation to select valid observations and proceed with subsequent flux calculation using both linear (LM) and non-linear (HM;[Hutchinson and Mosier, 1981](https://doi.org/10.2136/sssaj1981.03615995004500020017x)) flux
+- manually inspect the user's selection of incubation to select valid observations and proceed 
+with subsequent flux calculation using both linear (LM) and non-linear (HM;[Hutchinson and Mosier, 1981](https://doi.org/10.2136/sssaj1981.03615995004500020017x)) flux
 calculation methods.
-- automatically processing of the data, from harmonized incubation timeseries to flux estimates using both LM and HM methods, without any manual step with several options regarding the automatic selection of valid data points.
+- automatically processing of the data, from harmonized incubation timeseries to flux estimates 
+using both LM and HM methods, without any manual step with several options regarding the automatic selection of valid data points.
 
 ## Import data using `goFlux`
-Refer to [this webpage](https://qepanna.quarto.pub/goflux/import.html) to learn how to import raw data using the goFlux package.
+
+Refer to [this webpage](https://qepanna.quarto.pub/goflux/import.html) to learn how to import 
+raw data using the goFlux package.
 
 ## Visualize incubation timeseries and save as pdf file
-It can be covenient to first have look at the incubation timeseries. This can be easily achieved with the `plot.incubations()` function.
+
+It can be covenient to first have look at the incubation timeseries. This can be easily achieved 
+with the `plot.incubations()` function.
 Plots can be saved with `gg_save_pdf()`.
 ``` r
 p <- plot.incubations(mydata)
@@ -26,34 +34,50 @@ gg_save_pdf(list = p, path = "mypath", filename = "myfilename.pdf")
 ```
 
 ## Selection of valid observations, trimming incubation timeseries
+
 After import, the user can either define manually the start and end points of each measurement, or proceed with an automatised
 selection of the observations with a set of different methods:
 
-	### Manual inspection and selection of valid data points
-	Just as in the `goFlux` R package, the **manual selection of the measurements** is based on `start.time`, provided separately 
-	in an auxiliary file.
-	The function `obs.win` splits the imported data into a list of data frame (divided by `UniqueID`) and creates an observation 
-	window around the `start.time` to allow for a manual selection of the start and end points of each measurements, using the 
-	function `click.peak2`.
-	This manual selection is then used to trim the timeseries and calculate fluxes.
-	
-	### Automatic data selection
-	The **automatic identification of the measurements** has two methods:
-	- "trust.it.all": the user is willing to trust the incubation timeseries as much as possible, with the possibility to trim 
-	the incubation timeseries by a defined time window (see `shoulder` parameter). This method allows for non-linear patterns in the timeseries.
-	- "keep.it.linear": the method is first automatically identifying linear patterns after the beginning of the incubation, and discard the measurements
-	when they diverge away from a linear pattern.
+### Manual inspection and selection of valid data points
+Just as in the `goFlux` R package, the **manual selection of the measurements** is based on `start.time`, provided separately 
+in an auxiliary file.
+The function `clickflux()` splits the imported data into a list of data frame (divided by `UniqueID`) and creates an observation 
+window around the `start.time` to allow for a manual selection of the start and end points of each measurements, using the 
+function `click.peak2`.
+This manual selection is then used to trim the timeseries and calculate fluxes.
+Code example:
+``` r
+clickflux(dataframe = mydata, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
+                      plot.lim = c(1800,max(mydata_all$CH4dry_ppb)), fluxSeparation = F, displayPlots = T)
+```
+
+### Automatic data selection
+The **automatic identification of the measurements** is all performed by a single function call. It has two methods:
+- "trust.it.all": the user is willing to trust the incubation timeseries as much as possible, with the possibility to trim 
+the incubation timeseries by a defined time window (see `shoulder` parameter). This method allows for non-linear patterns in the timeseries.
+- "keep.it.linear": the method is first automatically identifying linear patterns after the beginning of the incubation, and discard the measurements
+when they diverge away from a linear pattern.
+
+Code example:
+``` r
+automaticflux(dataframe = mydata, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
+                          fluxSeparation = T, displayPlots = T,
+                          method = "trust.it.all")
+```
 
 ## Separate Diffusion from Ebullition in CH4 measurements
+
 One typical pathway for CH4 in aquatic ecosystems is through ebullition, or bubbling. Here the function `flux.separator()` automatically
 separates diffusive linear patterns from abrupt and highly non-linear ebullition patterns. This is done by first identifying the first
 linear chunk in the incubation time series which is used to calculate diffusion. The total flux is calculated by calculating the total
 concentration change inside the chamber over the incubation time, and ebullition is then calculated by difference:
 
-$$\mathbf{Eqn~1}~~~~~~F_ebullition = F_total - F_diffusion$$
+$$\mathbf{Eqn~1}~~~~~~Ebullition = Total - Fiffusion$$
 
 ## Flux calculation
-**Diffusive** fluxes are calculated with the `goFlux` functions. In brief, the function `goFlux` calculates fluxes from a variety of greenhouse
+
+**Diffusive** fluxes are calculated with the `goFlux` functions. In brief, 
+the function `goFlux` calculates fluxes from a variety of greenhouse
 gases (CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O, NH<sub>3</sub>,
 CO, and H<sub>2</sub>O) using both linear (LM) and non-linear (HM;
 [Hutchinson and Mosier,
