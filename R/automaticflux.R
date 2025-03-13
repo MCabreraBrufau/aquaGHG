@@ -43,7 +43,7 @@ automaticflux <-  function(dataframe, myauxfile,
     fluxSeparation = FALSE
     warning("in automaticflux(), 'fluxSeparation' was not provided and automatically set to FALSE")
   }
-  if(fluxSeparation != TRUE & quality.check != FALSE){
+  if(fluxSeparation != TRUE & fluxSeparation != FALSE){
     stop("'fluxSeparation' must be TRUE or FALSE")}
 
   ## Check displayPlots ####
@@ -51,7 +51,7 @@ automaticflux <-  function(dataframe, myauxfile,
     displayPlots = FALSE
     warning("in automaticflux(), 'displayPlots' was not provided and automatically set to FALSE")
   }
-  if(displayPlots != TRUE & quality.check != FALSE){
+  if(displayPlots != TRUE & displayPlots != FALSE){
     stop("'displayPlots' must be TRUE or FALSE")}
 
   ## Check method ####
@@ -61,9 +61,11 @@ automaticflux <-  function(dataframe, myauxfile,
     stop("'method' must be of class character and one of the following: 'trust.it.all', 'focus.on.linear'")}
 
 
+
+  # ----------------------- Function starts here -------------------------###
+
   # list of criteria for model selection
   criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
-
 
   mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
 
@@ -94,8 +96,13 @@ automaticflux <-  function(dataframe, myauxfile,
       }
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
+      # first we need to automatically identify the first linear chunk
+      linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
+                           list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
+        map_df(., ~as.data.frame(.x))
+
       best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, criteria)%>%
+                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, linear_chunk = linear_chunk, criteria)%>%
         map_df(., ~as.data.frame(.x))
 
 
@@ -115,7 +122,7 @@ automaticflux <-  function(dataframe, myauxfile,
 ... Change 'method' to 'trust.it.all' to activate fluxSeparation.")
       }
 
-    lin.chunks <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
+    linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
                          list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
       map_df(., ~as.data.frame(.x))
 
@@ -123,10 +130,10 @@ automaticflux <-  function(dataframe, myauxfile,
     myauxfile_corr <- NULL
     for(id in unique(myauxfile$UniqueID)){
       myauxfile_corr.tmp <- myauxfile[myauxfile$UniqueID==id,]
-      ind <- which(lin.chunks$UniqueID==id)
-      myauxfile_corr.tmp$start.time <- lin.chunks$start.time[ind]
-      myauxfile_corr.tmp$obs.length <- lin.chunks$obs.length[ind]
-      myauxfile_corr.tmp$end.time <- lin.chunks$start.time[ind] + lin.chunks$obs.length[ind]
+      ind <- which(linear_chunk$UniqueID==id)
+      myauxfile_corr.tmp$start.time <- linear_chunk$start.time[ind]
+      myauxfile_corr.tmp$obs.length <- linear_chunk$obs.length[ind]
+      myauxfile_corr.tmp$end.time <- linear_chunk$start.time[ind] + linear_chunk$obs.length[ind]
       myauxfile_corr <- rbind(myauxfile_corr, myauxfile_corr.tmp)
     }
     mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)

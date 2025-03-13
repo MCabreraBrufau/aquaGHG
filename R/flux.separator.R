@@ -5,13 +5,12 @@
 
 
 
-flux.separator <- function(dataframe, gastype, auxfile, criteria){
+flux.separator <- function(dataframe, gastype, auxfile, linear_chunk, criteria){
 
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[2],]
   id = unique(dataframe$UniqueID)
 
-  first_lin_chunk <- find_first_linear_chunk(dataframe = dataframe, gastype = gastype, length.min=30)
-
+  linear_chunk <- linear_chunk[linear_chunk$UniqueID==id,]
 
   # computing density probability of first derivative
   d_df <- get_dCdt_density(dataframe, gastype)
@@ -41,8 +40,8 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
 
   # for each incubation, extraCf data selected at previous step
   auxfile_corr <- auxfile[auxfile$UniqueID==id,]
-  auxfile_corr$start.time <- first_lin_chunk$start.time
-  auxfile_corr$obs.length <- first_lin_chunk$obs.length
+  auxfile_corr$start.time <- linear_chunk$start.time
+  auxfile_corr$obs.length <- linear_chunk$obs.length
   auxfile_corr$end.time <- auxfile_corr$start.time + auxfile_corr$obs.length
 
   mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = auxfile_corr, shoulder = 0)
@@ -69,13 +68,13 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   best.flux_auto$diffusion.flux <- best.flux_diffusion$best.flux # nmol/m2/s
 
   # adding information of data used for diffusion model
-  best.flux_auto$obs.length_diffusion <- first_lin_chunk$obs.length
+  best.flux_auto$obs.length_diffusion <- linear_chunk$obs.length
 
   # Error propagation (expressed as SD)
-  deltaC0 <- sd(mydf$conc[mydf$time<t.win])
-  deltaCf <- sd(mydf$conc[mydf$time>max(mydf$time)-t.win])
+  SD_C0 <- sd(mydf$conc[mydf$time<t.win])
+  SD_Cf <- sd(mydf$conc[mydf$time>max(mydf$time)-t.win])
   deltaconcs = Cf-C0
-  SD_deltaconcs <- sqrt(deltaC0^2+deltaCf^2)
+  SD_deltaconcs <- sqrt(SD_C0^2+SD_Cf^2)
   SD_total.flux <- abs(best.flux_auto$total.flux) * SD_deltaconcs/deltaconcs
   if(best.flux_auto$model == "LM"){SE_diffusion.flux = best.flux_auto$LM.SE} else {SE_diffusion.flux = best.flux_auto$HM.SE}
   SD_diffusion.flux <- best.flux_auto$LM.SE*sqrt(best.flux_auto$nb.obs)
@@ -104,10 +103,10 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria){
   return(best.flux_auto)
 }
 
-flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria) {
+flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, linear_chunk, criteria) {
 
   # function to apply in the loop. Adapt parameters to your needs.
-  best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria)
+  best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, linear_chunk, criteria)
 
   return(best.flux_auto)
 }

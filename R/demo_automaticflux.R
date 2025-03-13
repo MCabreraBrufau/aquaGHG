@@ -25,6 +25,7 @@ source(file = "R/flag_diffusion.R")
 source(file = "R/get_dCdt_density.R")
 source(file = "R/flux.separator.R")
 source(file = "R/separated.flux.plot.R")
+source(file = "R/clickflux.R")
 
 # Loading data
 mydata_all <- NULL
@@ -53,11 +54,15 @@ CO2_flux <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulde
                           fluxSeparation = F, displayPlots = T,
                           method = "focus.on.linear") # trust.it.all or focus.on.linear
 
-# automatic inspection of CO2 data and flux calculation
-CH4_flux <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
+# automatic inspection of CH4 data and flux calculation
+CH4_flux.auto <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
                           fluxSeparation = T, displayPlots = T,
                           method = "trust.it.all") # trust.it.all or focus.on.linear
 
+
+# manual inspection of CH4 data and flux calculation
+CH4_flux.manual <- clickflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
+                      plot.lim = c(1800,max(mydata_all$CH4dry_ppb)), fluxSeparation = T, displayPlots = T)
 
 
 
