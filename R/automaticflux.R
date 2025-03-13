@@ -1,6 +1,39 @@
-
-
-
+#' Automatic flux calculation
+#'
+#' @param dataframe a data.frame containing gas measurements (see \code{gastype}
+#'                  below), water vapor measurements (see \code{H2O_col} below)
+#'                  and the following columns: \code{UniqueID}, \code{Etime}, and
+#'                  the precision of the instrument for each gas (see description below).
+#' @param myauxfile a data.frame containing auxiliary information needed with the
+#'                  following columns: \code{UniqueID}, \code{start.time}, \code{obs.length},
+#'                  \code{Vtot}, \code{Area}, \code{Pcham}, and \code{Tcham}.
+#' @param shoulder numerical value; time before and after measurement in observation
+#'                 window (seconds). Default is 30 seconds.
+#' @param gastype character string; specifies which column should be used for the
+#'                flux calculations. Must be one of the following: "CO2dry_ppm",
+#'                "CH4dry_ppb", "COdry_ppb", "N2Odry_ppb", "NH3dry_ppb" or "H2O_ppm".
+#' @param fluxSeparation logical; if \code{fluxSeparation = TRUE}, the model proceeds with
+#'                        automatic separation between diffusion and ebullition fluxes.
+#' @param displayPlots logical; if \code{displayPlots = TRUE}, plots showing how
+#'                      the model performs are shown
+#'
+#'#' The precision of the instrument is needed to restrict kappa-max
+#' (\code{\link[goFlux]{k.max}}) in the non-linear flux calculation
+#' (\code{\link[goFlux]{HM.flux}}). Kappa-max is inversely proportional to
+#' instrument precision. If the precision of your instrument is unknown, it is
+#' better to use a low value (e.g. 1 ppm) to allow for more curvature, especially
+#' for water vapor fluxes, or very long measurements, that are normally curved.
+#' The default values given for instrument precision are the ones provided by
+#' the manufacturer upon request, for the latest model of this instrument
+#' available at the time of the creation of this function (11-2023).
+#'
+#' @param method
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
 automaticflux <-  function(dataframe, myauxfile,
                            shoulder = 0,
                            gastype,
@@ -98,11 +131,11 @@ automaticflux <-  function(dataframe, myauxfile,
 
       # first we need to automatically identify the first linear chunk
       linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
-                           list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
+                             list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
         map_df(., ~as.data.frame(.x))
 
       best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                                 list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, linear_chunk = linear_chunk, criteria)%>%
+                               list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, linear_chunk = linear_chunk, criteria)%>%
         map_df(., ~as.data.frame(.x))
 
 
@@ -120,10 +153,10 @@ automaticflux <-  function(dataframe, myauxfile,
     if(fluxSeparation){
       warning("fluxSeparation ignored because method was set to 'focus.on.linear' and discards non-linear patterns in the observations.
 ... Change 'method' to 'trust.it.all' to activate fluxSeparation.")
-      }
+    }
 
     linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
-                         list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
+                           list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
       map_df(., ~as.data.frame(.x))
 
     # for each incubation, extract data selected at previous step
