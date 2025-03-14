@@ -6,15 +6,19 @@
 
 `aquaGHG` is an easy-to-use and generic R package with the objective to provide reproducible 
 calculation of GHG fluxes from static or floating chamber measurements in aquatic ecosystems. 
-It uses the `goFlux` R package (https://github.com/Qepanna/goFlux) to import raw measuements.
-Look up [this webpage](https://qepanna.quarto.pub/goflux/) for a
-demonstration of the `goFlux` package usage.
-Then, mainly provides two options:
-- manually inspect the user's selection of incubation to select valid observations and proceed 
+It uses the `goFlux` R package (https://github.com/Qepanna/goFlux) to import raw measuements and calculate diffusive fluxes.
+Look up [this webpage](https://qepanna.quarto.pub/goflux/) for a demonstration of the `goFlux` package usage.
+`aquaGHG` mainly provides two options:
+- manually inspect the gas measurements, select the valid observations and proceed 
 with subsequent flux calculation using both linear (LM) and non-linear (HM;[Hutchinson and Mosier, 1981](https://doi.org/10.2136/sssaj1981.03615995004500020017x)) flux
 calculation methods.
-- automatically processing of the data, from harmonized incubation timeseries to flux estimates 
-using both LM and HM methods, without any manual step with several options regarding the automatic selection of valid data points.
+- automatically process the data without any manual step, from raw incubation timeseries to flux estimates to minimize users biases during data selection.
+
+Ebullition (or bubbling) can be a dominant pathway for methane (CH4) emissions in aquatic ecosystems.
+Based on the fact that previous studies have demonstrated how short-term *in-situ* incubations can be 
+used to estimate both CH4 diffusive flux and ebullition, `aquaGHG` allows users to separate CH4 measurements
+into diffusion and ebullition components. Diffusion patterns are either selected manually or automatically
+identified with a dedicated algorithm, and ebullition fluxes are deduced by difference between the total and the diffusive fluxes.
 
 ## Import data using `goFlux`
 
