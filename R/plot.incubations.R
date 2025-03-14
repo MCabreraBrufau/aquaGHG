@@ -24,13 +24,6 @@ plot.incubations <- function(dataframe) {
 
   # FUNCTION STARTS ####
 
-  # Define gas units
-  # if(gastype == "CO2dry_ppm") gas.unit <- "ppm"
-  # if(gastype == "CH4dry_ppb") gas.unit <- "ppb"
-  # if(gastype == "N2Odry_ppb") gas.unit <- "ppb"
-  # if(gastype == "COdry_ppb") gas.unit <- "ppb"
-  # if(gastype == "NH3dry_ppb") gas.unit <- "ppb"
-  # if(gastype == "H2O_ppm") gas.unit <- "ppm"
 
   # find out which variables are present in dataframe
   vars <- c("CO2dry_ppm", "CH4dry_ppb", "N2Odry_ppb", "COdry_ppb", "NH3dry_ppb", "H2O_ppm")
@@ -39,7 +32,8 @@ plot.incubations <- function(dataframe) {
     if(any(grepl(paste0("\\<",var,"\\>"), names(dataframe)))){vars_in <- c(vars_in, var)}
   }
 
-  dataframe_gath <- gather(dataframe[,c("UniqueID","Etime",vars_in)], variable, value, -Etime, -UniqueID)
+  dataframe_gath <- gather(dataframe[,c("UniqueID","Etime",vars_in)],
+                           variable, value, -Etime, -UniqueID)
 
   # Create a list of dataframe (by UniqueID)
   data_split <- dataframe_gath %>%
@@ -56,25 +50,46 @@ plot.incubations <- function(dataframe) {
     gas_meas <- data_split[[f]]$value
     variable <- data_split[[f]]$variable
 
-    plot_data <- cbind.data.frame(gas_meas, Etime, variable)
+    flag_bubbles <- vector(mode = 'logical', length = length(Etime))
+
+    # if CH4 in dataframe, check bubbles
+    if(any(grepl(paste0("\\<CH4dry_ppb\\>"), names(dataframe)))){
+      bubbles <- find_bubbles(time = data_split[[f]]$Etime[data_split[[f]]$variable=="CH4dry_ppb"],
+                              conc = data_split[[f]]$value[data_split[[f]]$variable=="CH4dry_ppb"], window.size = 15)
+      if(!is.null(bubbles)){
+        for(i_bubb in seq(1, dim(bubbles)[1])){
+          flag_bubbles[which(Etime >= bubbles$start[i_bubb] & Etime <= bubbles$end[i_bubb])] <- T
+        }
+      }
+    }
+
+    plot_data <- cbind.data.frame(gas_meas, Etime, variable, flag_bubbles)
 
     incubationID <- unique(data_split[[f]]$UniqueID)
 
     # Draw plot ####
-    plot <- ggplot(plot_data, aes(x = Etime, y = gas_meas)) +
-      geom_point(size=0.5)+
+    plot <- ggplot(plot_data, aes(x = Etime, y = gas_meas))+
+      geom_point(size=1, aes(colour = flag_bubbles))+
       geom_path()+
       facet_wrap(.~variable, scales = "free_y", ncol = 1)+
 
       # Make the plot pretty
       xlab("Time (sec)") +
       ylab("Measured gas") +
+      scale_color_manual(values = c("black", "red"), guide = "none") +
       scale_x_continuous(breaks = seq(-60, max(Etime), 60),
                          minor_breaks = seq(-60, max(Etime)+60, 10)) +
       theme_article() +
       theme(axis.title.x = element_text(size = 10, face = "bold"),
             axis.title.y = element_text(size = 10, face = "bold"))+
       ggtitle(incubationID)
+
+    if(!is.null(bubbles)){
+      plot <- plot + annotate("rect", fill = "red", alpha = 0.25,
+                                                  xmin = bubbles$start, xmax = bubbles$end,
+                                                  ymin = rep(-Inf, dim(bubbles)[1]), ymax = rep(Inf, dim(bubbles)[1]))
+      }
+
 
     return(plot)
   })

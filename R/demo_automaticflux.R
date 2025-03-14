@@ -26,6 +26,7 @@ source(file = "R/get_dCdt_density.R")
 source(file = "R/flux.separator.R")
 source(file = "R/separated.flux.plot.R")
 source(file = "R/clickflux.R")
+source(file = "R/find_bubbles.R")
 
 # Loading data
 mydata_all <- NULL
@@ -43,7 +44,7 @@ myauxfile$start.time <- as.POSIXct(myauxfile$start.time, tz = 'UTC', format="%d/
 
 
 # plot incubations overview
-p <- plot.incubations(mydata_all)
+p <- plot.incubations(dataframe = mydata_all)
 print(p)
 # to save these plots in a dedicated path, do
 # gg_save_pdf(list = p, path = , filename = "myfilename.pdf")
