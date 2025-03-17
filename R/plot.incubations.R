@@ -55,7 +55,7 @@ plot.incubations <- function(dataframe) {
     # if CH4 in dataframe, check bubbles
     if(any(grepl(paste0("\\<CH4dry_ppb\\>"), names(dataframe)))){
       bubbles <- find_bubbles(time = data_split[[f]]$Etime[data_split[[f]]$variable=="CH4dry_ppb"],
-                              conc = data_split[[f]]$value[data_split[[f]]$variable=="CH4dry_ppb"], window.size = 15)
+                              conc = data_split[[f]]$value[data_split[[f]]$variable=="CH4dry_ppb"], window.size = 10)
       if(!is.null(bubbles)){
         for(i_bubb in seq(1, dim(bubbles)[1])){
           flag_bubbles[which(Etime >= bubbles$start[i_bubb] & Etime <= bubbles$end[i_bubb])] <- T
