@@ -22,7 +22,7 @@ find_bubbles <- function(time, conc, window.size){
   }
 
   # defining threshold
-  thresh <- max(0.001, quantile(df.stats$var, 0.95))
+  thresh <- max(1e-4, quantile(df.stats$var, 0.7))
 
   # plot(df.stats$t, df.stats$var)
   # points(df.stats$t[df.stats$var > thresh], df.stats$var[df.stats$var > thresh], col='red')
@@ -44,6 +44,12 @@ find_bubbles <- function(time, conc, window.size){
     if(last(vect)==T){jumps <- c(jumps, i)}
     chunks <- data.frame(start = jumps[seq(1,length(jumps),2)],
                          end = jumps[seq(2,length(jumps),2)])
+
+    # we discard chunks of less than 5 datapoints
+    chunks <- chunks[which(chunks$end-chunks$start > 5),]
+    if(dim(chunks)[1] == 0){
+      chunks <- NULL
+    }
 
     # plot(x, conc_std)
     # abline(v = c(chunks$start, chunks$end), col='red')

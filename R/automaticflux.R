@@ -86,7 +86,7 @@
 automaticflux <-  function(dataframe, myauxfile,
                            shoulder = 0,
                            gastype,
-                           fluxSeparation,
+                           fluxSeparation, force.separation,
                            displayPlots,
                            method){
   ## Check dataframe ####
@@ -128,6 +128,14 @@ automaticflux <-  function(dataframe, myauxfile,
   if(fluxSeparation != TRUE & fluxSeparation != FALSE){
     stop("'fluxSeparation' must be TRUE or FALSE")}
 
+  ## Check force.separation ####
+  if(missing(force.separation)) {
+    force.separation = FALSE
+    # warning("in automaticflux(), 'force.separation' was not provided and automatically set to FALSE")
+  }
+  if(force.separation != TRUE & force.separation != FALSE){
+    stop("'force.separation' must be TRUE or FALSE")}
+
   ## Check displayPlots ####
   if(missing(displayPlots)) {
     displayPlots = FALSE
@@ -159,14 +167,16 @@ automaticflux <-  function(dataframe, myauxfile,
   mydata_auto <- mydata_auto %>%
     left_join(myauxfile %>% select(UniqueID, Area, Vtot, Tcham, Pcham))
 
+  # Calculate fluxes
+  flux_auto <- goFlux(dataframe = mydata_auto, gastype)
+
+  # Use best.flux to select the best flux estimates (LM or HM)
+  # based on a list of criteria
+  best.flux_auto <- best.flux(flux_auto, criteria)
+
+
   if (method == "trust.it.all"){
     if(!fluxSeparation){
-      # Calculate fluxes
-      flux_auto <- goFlux(dataframe = mydata_auto, gastype)
-
-      # Use best.flux to select the best flux estimates (LM or HM)
-      # based on a list of criteria
-      best.flux_auto <- best.flux(flux_auto, criteria)
 
       if(displayPlots){
         p <- flux.plot(
@@ -178,13 +188,8 @@ automaticflux <-  function(dataframe, myauxfile,
       }
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
-      # first we need to automatically identify the first linear chunk
-      linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,
-                             list_of_dataframe = mydata_ow, gastype = gastype, length.min=30) %>%
-        map_df(., ~as.data.frame(.x))
-
       best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                               list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, linear_chunk = linear_chunk, criteria)%>%
+                               list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, criteria, force.separation, best.flux_auto)%>%
         map_df(., ~as.data.frame(.x))
 
 
