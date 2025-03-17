@@ -2,17 +2,17 @@
 
 
 
-flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separation, best.flux_auto){
+flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separation, best.flux){
 
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[2],]
   id = unique(dataframe$UniqueID)
 
-  best.flux_auto <- best.flux_auto[best.flux_auto$UniqueID == id,]
+  best.flux <- best.flux[best.flux$UniqueID == id,]
 
   # Initializing variables
-  best.flux_auto$total.flux <- best.flux_auto$ebullition.flux <- best.flux_auto$diffusion.flux <-
-    best.flux_auto$obs.length_diffusion <- best.flux_auto$total.flux.SD <-
-    best.flux_auto$diffusion.flux.SD <- best.flux_auto$ebullition.flux.SD <- NA
+  best.flux$total.flux <- best.flux$ebullition.flux <- best.flux$diffusion.flux <-
+    best.flux$obs.length_diffusion <- best.flux$total.flux.SD <-
+    best.flux$diffusion.flux.SD <- best.flux$ebullition.flux.SD <- NA
 
 
 
@@ -35,13 +35,13 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separati
   if (is.null(bubbles) & force.separation==FALSE){
     warning(paste0("For ",id, ", no bubbles were found. Total flux is attributed to diffusion only"))
 
-    best.flux_auto$obs.length_diffusion <- best.flux_auto$obs.length
+    best.flux$obs.length_diffusion <- best.flux$obs.length
 
-    best.flux_auto$total.flux <- best.flux_auto$best.flux
-    best.flux_auto$ebullition.flux <- 0
-    best.flux_auto$diffusion.flux <- best.flux_auto$best.flux
+    best.flux$total.flux <- best.flux$best.flux
+    best.flux$ebullition.flux <- 0
+    best.flux$diffusion.flux <- best.flux$best.flux
 
-    SD_total.flux <- SD_diffusion.flux <- best.flux_auto$LM.SE*sqrt(best.flux_auto$nb.obs)
+    SD_total.flux <- SD_diffusion.flux <- best.flux$LM.SE*sqrt(best.flux$nb.obs)
     SD_ebullition.flux <- NA
 
   } else {
@@ -101,54 +101,54 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separati
 
     best.flux_diffusion <- best.flux(flux_diffusion, criteria)
 
-    best.flux_auto <- best.flux_diffusion
-    # names(best.flux_auto)[-1] <- paste0(names(best.flux_auto)[-1],"_diffusion")
+    best.flux <- best.flux_diffusion
+    # names(best.flux)[-1] <- paste0(names(best.flux)[-1],"_diffusion")
 
     # adding information of data used for diffusion model
-    best.flux_auto$obs.length_diffusion <- linear_chunk$obs.length
+    best.flux$obs.length_diffusion <- linear_chunk$obs.length
 
-    best.flux_auto$total.flux <- (Cf-C0)/incubation_time*best.flux_diffusion$flux.term # nmol/m2/s
-    best.flux_auto$ebullition.flux <- best.flux_auto$total.flux - best.flux_diffusion$best.flux # nmol/m2/s
-    best.flux_auto$diffusion.flux <- best.flux_diffusion$best.flux # nmol/m2/s
+    best.flux$total.flux <- (Cf-C0)/incubation_time*best.flux_diffusion$flux.term # nmol/m2/s
+    best.flux$ebullition.flux <- best.flux$total.flux - best.flux_diffusion$best.flux # nmol/m2/s
+    best.flux$diffusion.flux <- best.flux_diffusion$best.flux # nmol/m2/s
 
     # Error propagation (expressed as SD)
     SD_C0 <- sd(mydf$conc[mydf$time<t.win])
     SD_Cf <- sd(mydf$conc[mydf$time>max(mydf$time)-t.win])
     deltaconcs = Cf-C0
     SD_deltaconcs <- sqrt(SD_C0^2+SD_Cf^2)
-    SD_total.flux <- abs(best.flux_auto$total.flux) * SD_deltaconcs/deltaconcs
+    SD_total.flux <- abs(best.flux$total.flux) * SD_deltaconcs/deltaconcs
     if(best.flux_diffusion$model == "LM"){SE_diffusion.flux = best.flux_diffusion$LM.SE} else {SE_diffusion.flux = best.flux_diffusion$HM.SE}
     SD_diffusion.flux <- best.flux_diffusion$LM.SE*sqrt(best.flux_diffusion$nb.obs)
     SD_ebullition.flux <- sqrt(SD_diffusion.flux^2+SD_total.flux^2)
 
     # warnings
-    if( best.flux_auto$ebullition.flux < abs(best.flux_auto$diffusion.flux+SD_diffusion.flux)){
+    if( best.flux$ebullition.flux < abs(best.flux$diffusion.flux+SD_diffusion.flux)){
       warning(paste0("for ",id, ", ebullition term is within range of uncertainty of diffusion."))
-      best.flux_auto$quality.check <- "ebullition too low to be trusted"
+      best.flux$quality.check <- "ebullition too low to be trusted"
     }
 
-    if( best.flux_auto$ebullition.flux < 0){
+    if( best.flux$ebullition.flux < 0){
       warning(paste0("for ",id, ", negative ebullition term. It was forced to 0."))
-      best.flux_auto$ebullition.flux <- 0
+      best.flux$ebullition.flux <- 0
     }
 
-    if( best.flux_auto$diffusion.flux > best.flux_auto$total.flux){
+    if( best.flux$diffusion.flux > best.flux$total.flux){
       warning(paste0("for ",id, ", diffusion term is larger than total flux estimated."))
-      best.flux_auto$quality.check <- "diffusion > total flux"
+      best.flux$quality.check <- "diffusion > total flux"
     }
   }
 
-  best.flux_auto$total.flux.SD <- SD_total.flux
-  best.flux_auto$diffusion.flux.SD <- SD_diffusion.flux
-  best.flux_auto$ebullition.flux.SD <- SD_ebullition.flux
+  best.flux$total.flux.SD <- SD_total.flux
+  best.flux$diffusion.flux.SD <- SD_diffusion.flux
+  best.flux$ebullition.flux.SD <- SD_ebullition.flux
 
-  return(best.flux_auto)
+  return(best.flux)
 }
 
-flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria, force.separation, best.flux_auto) {
+flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria, force.separation, best.flux) {
 
   # function to apply in the loop. Adapt parameters to your needs.
-  best.flux_auto <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, best.flux_auto)
+  best.flux <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, best.flux)
 
-  return(best.flux_auto)
+  return(best.flux)
 }

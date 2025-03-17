@@ -189,7 +189,9 @@ automaticflux <-  function(dataframe, myauxfile,
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
       best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
-                               list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile, criteria, force.separation, best.flux_auto)%>%
+                               list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile,
+                               criteria = criteria, force.separation = force.separation,
+                               best.flux = best.flux_auto)%>%
         map_df(., ~as.data.frame(.x))
 
 

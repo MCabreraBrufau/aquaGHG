@@ -5,8 +5,8 @@ find_bubbles <- function(time, conc, window.size){
   # standarizing conc
   conc_std <- (conc-min(conc))/max(conc)
 
-  x = seq(0,max(time),1)
-  conc_std <- approx(time, conc_std, xout = x, method = "linear")$y
+  x = seq(min(time),max(time),1)
+  conc_std <- approx(time, conc_std, xout = x, method = "linear", rule = 2)$y
 
 
   # defining start and end for moving window
