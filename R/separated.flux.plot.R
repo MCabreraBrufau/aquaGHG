@@ -79,19 +79,16 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
   ### ebullition.flux
   if(!any(grepl("\\<ebullition.flux\\>", names(flux.results)))){
     stop("'ebullition.flux' required in 'flux.results'")
-  } else if(!is.numeric(flux.results$ebullition.flux)){
-    stop("'ebullition.flux' in 'flux.results' must be of class numeric")}
+  }
 
   ## Check plot.legend ####
   plot.legend.all <- c("SD")
   if(!is.null(plot.legend)){
     if(!is.character(plot.legend)){
       stop("'plot.legend' must be of class character")
-    } else if(length(plot.legend) > 5){
-      stop("in 'plot.legend': A maximum of 5 additional parameters can be displayed above the plot.")
     } else if(!any(grepl(paste(paste("\\<", plot.legend.all, "\\>", sep = ""),
                                collapse = "|"), plot.legend))){
-      stop("if 'plot.legend' is not NULL, it must contain at least one of the following: 'MAE', 'RMSE', 'AICc', 'SErel', 'SE', 'r2', 'LM.p.val', 'HM.k', 'k.max', 'k.ratio', 'g.factor', 'best.model'")
+      stop("if 'plot.legend' is not NULL, it must contain at least one of the following: 'SD'")
     }
     ### SD ####
     if(any(grepl("\\<SD\\>", plot.legend))){
@@ -105,8 +102,7 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
         stop("'diffusion.flux.SD' in 'flux.results' must be of class numeric")}
       if(!any(grepl("\\<ebullition.flux.SD\\>", names(flux.results)))){
         stop("'SD' selected in 'plot.legend', but 'ebullition.flux.SD' missing in 'flux.results'")
-      } else if(!is.numeric(flux.results$ebullition.flux.SD)){
-        stop("'ebullition.flux.SD' in 'flux.results' must be of class numeric")}
+      }
     }
   }
   ## Check plot.display ####
@@ -453,7 +449,7 @@ separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
     flag <- data_split[[f]]$flag
     plot_data <- cbind.data.frame(gas_meas, Etime, flag)
     plot_data$flag_diff <- F
-    plot_data$flag_diff[plot_data$Etime < data_split[[f]]$obs.length_diffusion] <- T
+    plot_data$flag_diff[which(plot_data$Etime < data_split[[f]]$obs.length_diffusion)] <- T
 
     LM.slope <- unique(data_corr[[f]]$LM.slope)
     LM.C0 <- unique(data_corr[[f]]$LM.C0)

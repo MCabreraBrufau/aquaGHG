@@ -157,6 +157,10 @@ automaticflux <-  function(dataframe, myauxfile,
   # list of criteria for model selection
   criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
 
+  # making sure we work with the auxfile corresponding to measurements
+  myauxfile <- myauxfile[myauxfile$UniqueID %in% unique(dataframe$UniqueID),]
+
+  # split measurements by UniqueID
   mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
 
   # Join mydata_ow with info on start end incubation
@@ -177,7 +181,6 @@ automaticflux <-  function(dataframe, myauxfile,
 
   if (method == "trust.it.all"){
     if(!fluxSeparation){
-
       if(displayPlots){
         p <- flux.plot(
           flux.results = best.flux_auto, dataframe = mydata_auto,
@@ -191,7 +194,7 @@ automaticflux <-  function(dataframe, myauxfile,
       best.flux_auto <- lapply(seq_along(mydata_ow), flux.separator.loop,
                                list_of_dataframes = mydata_ow, gastype = gastype, auxfile = myauxfile,
                                criteria = criteria, force.separation = force.separation,
-                               best.flux = best.flux_auto)%>%
+                               mybest.flux = best.flux_auto)%>%
         map_df(., ~as.data.frame(.x))
 
 

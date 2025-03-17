@@ -10,12 +10,12 @@ find_bubbles <- function(time, conc, window.size){
 
 
   # defining start and end for moving window
-  t_start <- ceiling(window.size/2)
+  t_start <- x[1]+ceiling(window.size/2)
   t_stop <- max(time)-floor(window.size/2)
 
   # computing variance of conc_std with a moving window
   df.stats <- NULL
-  for(t in seq(t_start, t_stop,1)){
+  for(t in seq(t_start, floor(t_stop),1)){
     ind_window <- which(x>=t-floor(window.size/2) & x<=t+floor(window.size/2))
     df.stats <- rbind(df.stats, data.frame(t = t,
                                            var = var(conc_std[ind_window])))
