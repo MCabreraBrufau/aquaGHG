@@ -1,4 +1,14 @@
-
+#' Title
+#'
+#' @param dataframe blabla
+#' @param gastype blabla
+#'
+#' @return blabla
+#'
+#' @examples
+#' blabla
+#'
+#' @export
 get_dCdt_density <- function(dataframe, gastype){
   mydf <- data.frame(POSIX.time = dataframe$POSIX.time,
                      time = as.numeric(dataframe$POSIX.time-first(dataframe$POSIX.time)),

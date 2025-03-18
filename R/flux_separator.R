@@ -3,10 +3,10 @@
 #' This function calculate diffusion and ebullition fluxes based on measurements
 #' separation. First, if CH4 is available, the function uses \code{\link[find_bubbles]find_bubbles}
 #' to check if it makes sense trying to separate fluxes. If \code{\link[find_bubbles]find_bubbles}
-#' returns NULL, \code{\link[flux.separator]flux.separator} automatically skips the flux separation
+#' returns NULL, \code{\link[flux_separator]flux_separator} automatically skips the flux separation
 #' and calculates total fluxes as diffusion only.
 #' If \code{\link[find_bubbles]find_bubbles} identifies probable bubbling events,
-#' \code{\link[flux.separator]flux.separator}
+#' \code{\link[flux_separator]flux_separator}
 #' uses function \code{\link[find_first_linear_chunk]find_first_linear_chunk}
 #' to identify which is the first linear chunk in the measurements. This will be used to calculate diffusion flux
 #'  (\code{diffusion.flux}).
@@ -76,15 +76,15 @@
 #' standard deviation estimated for total, diffusive, and ebullition fluxes, along with
 #' the number of observations used for the calculatino of diffusion (\code{nb.obs}).
 #'
-
-#' @export
 #'
 #' @examples
+#' blabla
 #'
 #' @seealso See also the function \code{\link[automaticflux]{automaticflux}} and
 #' \code{\link[clickflux]{clickflux}} for more information about usage.
 #'
-flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separation, mybest.flux){
+#' @export
+flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separation, mybest.flux){
 
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[2],]
   id = unique(dataframe$UniqueID)
@@ -218,10 +218,10 @@ flux.separator <- function(dataframe, gastype, auxfile, criteria, force.separati
   return(mybest.flux)
 }
 
-flux.separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria, force.separation, mybest.flux) {
+flux_separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria, force.separation, mybest.flux) {
 
   # function to apply in the loop. Adapt parameters to your needs.
-  mybest.flux <- flux.separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, mybest.flux)
+  mybest.flux <- flux_separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, mybest.flux)
 
   return(mybest.flux)
 }

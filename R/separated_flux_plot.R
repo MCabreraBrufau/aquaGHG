@@ -1,5 +1,25 @@
 
-separated.flux.plot <- function(flux.results, dataframe, gastype, shoulder = 30,
+#' Title
+#'
+#' @param flux.results blabla
+#' @param dataframe blabla
+#' @param gastype blabla
+#' @param shoulder blabla
+#' @param plot.legend blabla
+#' @param plot.display blabla
+#' @param quality.check blabla
+#' @param flux.unit blabla
+#' @param flux.term.unit blabla
+#' @param p.val.disp blabla
+#' @param side blabla
+#'
+#' @return blabla
+#'
+#' @examples
+#' blabla
+#'
+#' @export
+separated_flux_plot <- function(flux.results, dataframe, gastype, shoulder = 30,
                       plot.legend = c("SD"),
                       plot.display = c("prec"),
                       quality.check = TRUE, flux.unit = NULL,

@@ -15,12 +15,12 @@
 #' \code{\link[plot.incubations]plot.incubations} for more information about usage.
 #'
 #'
-#' @export
 #'
 #' @examples
 #' bubbles <- find_bubbles(time = mydata$Etime,
 #'                         conc = mydata$CH4dry_ppb, window.size = 10)
 #'
+#' @export
 find_bubbles <- function(time, conc, window.size){
   # standarizing conc
   conc_std <- (conc-min(conc))/max(conc)

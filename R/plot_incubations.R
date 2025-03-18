@@ -1,6 +1,19 @@
-
-
-plot.incubations <- function(dataframe) {
+#'
+#' A simple plot to provide an overview of gas measurements
+#'
+#' @param dataframe
+#'
+#' @return a plot for each incubation present in \code{dataframe} with all gas
+#'          measurements available. When CH4 measurements are detected, the plot
+#'          also highlights data points likely related to bubbling events.
+#'
+#' @examples
+#' load(data_example_1)
+#' plot_incubations(mydata)
+#'
+#'
+#' @export
+plot_incubations <- function(dataframe) {
 
   ## Check dataframe ####
   if(missing(dataframe)) stop("'dataframe' is required")

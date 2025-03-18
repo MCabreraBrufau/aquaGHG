@@ -2,107 +2,30 @@
 % Please edit documentation in R/automaticflux.R
 \name{automaticflux}
 \alias{automaticflux}
-\title{Automatic flux calculation}
-\usage{
-automaticflux(
-  dataframe,
-  myauxfile,
-  shoulder = 0,
-  gastype,
-  fluxSeparation,
-  force.separation,
-  displayPlots,
-  method
-)
-}
+\title{Title}
 \arguments{
-\item{dataframe}{a data.frame containing gas measurements (see \code{gastype}
-below), water vapor measurements (see \code{H2O_col} below)
-and the following columns: \code{UniqueID}, \code{Etime}, and
-the precision of the instrument for each gas (see description below).
+\item{dataframe}{blabla}
 
-#' The precision of the instrument is needed to restrict kappa-max
-(\code{\link[goFlux]{k.max}}) in the non-linear flux calculation
-(\code{\link[goFlux]{HM.flux}}). Kappa-max is inversely proportional to
-instrument precision. If the precision of your instrument is unknown, it is
-better to use a low value (e.g. 1 ppm) to allow for more curvature, especially
-for water vapor fluxes, or very long measurements, that are normally curved.
-The default values given for instrument precision are the ones provided by
-the manufacturer upon request, for the latest model of this instrument
-available at the time of the creation of this function (11-2023).}
+\item{myauxfile}{blabla}
 
-\item{myauxfile}{a data.frame containing auxiliary information needed with the
-following columns: \code{UniqueID}, \code{start.time}, \code{obs.length},
-\code{Vtot}, \code{Area}, \code{Pcham}, and \code{Tcham}.}
+\item{shoulder}{blabla}
 
-\item{shoulder}{numerical value; time before and after measurement in observation
-window (seconds). Default is 30 seconds.}
+\item{gastype}{blabla}
 
-\item{gastype}{character string; specifies which column should be used for the
-flux calculations. Must be one of the following: "CO2dry_ppm",
-"CH4dry_ppb", "COdry_ppb", "N2Odry_ppb", "NH3dry_ppb" or "H2O_ppm".}
+\item{fluxSeparation}{blabla}
 
-\item{fluxSeparation}{logical; if \code{fluxSeparation = TRUE}, the model proceeds with
-automatic separation between diffusion and ebullition fluxes.}
+\item{force.separation}{blabla}
 
-\item{displayPlots}{logical; if \code{displayPlots = TRUE}, plots showing how
-the model performs are shown}
+\item{displayPlots}{blabla}
 
-\item{method}{character string; specifies which method should be used to automatically
-process the gas measurements. Must be one of the following:
-"trust.it.all" (the model keeps the entire incubation time series)
-or "keep.it.linear" (the model first automatically selects the
-first linear chunk in the data and discard the rest). Note that
-\code\link{fluxSeparation} cannot be set to T if \code{method = 'keep.it.linear'}}
+\item{method}{blabla}
 }
 \value{
-Returns a data frame with: a \code{UniqueID} per
-measurement, 11 columns for the linear model results (linear flux estimate
-(\code{\link[goFlux]{LM.flux}}), initial gas concentration
-(\code{LM.C0}), final gas concentration (\code{LM.Ct}), slope of linear
-regression (\code{LM.slope}), mean absolute error (\code{LM.MAE}), root mean
-square error (\code{LM.RMSE}), Akaike's information criterion corrected for
-small sample size (\code{LM.AICc}), standard error (\code{LM.SE}), relative
-standard error (\code{LM.se.rel}), coefficient of determination (\code{LM.r2}),
-and \emph{p-value} (\code{LM.p.val})), 11 columns for the non-linear model
-results (non-linear flux estimate (\code{\link[goFlux]{HM.flux}}),
-initial gas concentration (\code{HM.C0}), the assumed concentration of
-constant gas source below the surface (\code{HM.Ci}), slope at \code{t=0}
-(\code{HM.slope}), mean absolute error (\code{HM.MAE}), root mean square error
-(\code{HM.RMSE}), Akaike's information criterion corrected for small sample
-size (\code{HM.AICc}), standard error (\code{HM.SE}), relative standard error
-(\code{HM.se.rel}), coefficient of determination (\code{HM.r2}), and curvature
-(kappa; \code{HM.k}), as well as the minimal detectable flux
-(\code{\link[goFlux]{MDF}}), the precision of the instrument
-(\code{prec}), the flux term (\code{\link[goFlux]{flux.term}}),
-kappa-max (\code{\link[goFlux]{k.max}}), the g factor (g.fact;
-\code{\link[goFlux]{g.factor}}), the number of observations used
-(\code{nb.obs}) and the true initial gas concentration (\code{C0}) and final
-gas concentration (\code{Ct}). In case \code{fluxSeparation} was set to 'TRUE',
-(\code{dataframe}) also contains information on flux separation, with flux value and
-standard deviation estimated for total, diffusive, and ebullition fluxes.
+blabla
 }
 \description{
-Automatic flux calculation
+Title
 }
 \examples{
-# Loading data
-load(data_example_1)
-mydata$Etime <- as.numeric(mydata$Etime)
-
-Loading auxfile table
-myauxfile = read.csv("data/myauxfile.csv")
-myauxfile$start.time <- as.POSIXct(myauxfile$start.time, tz = 'UTC', format="\%d/\%m/\%Y \%H:\%M")
-
-CH4_flux.auto <- automaticflux(dataframe = mydata, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
-                              fluxSeparation = T, displayPlots = T,
-                              method = "trust.it.all")
-
-
-
-}
-\references{
-Rheault et al., (2024). goFlux: A user-friendly way to
-calculate GHG fluxes yourself, regardless of user experience. \emph{Journal
-of Open Source Software}, 9(96), 6393, https://doi.org/10.21105/joss.06393
+blabla
 }

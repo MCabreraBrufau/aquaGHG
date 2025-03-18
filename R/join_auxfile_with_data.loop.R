@@ -1,9 +1,14 @@
 
-
-
-
-
-
+#' Title
+#'
+#' @param flux.unique blabla
+#'
+#' @return blabla
+#'
+#' @examples
+#' blabla
+#'
+#' @export
 join_auxfile_with_data <- function(flux.unique) { # flux.unique <- mydata_ow
 
   # Assign NULL to variables without binding

@@ -1,96 +1,23 @@
-#' Manual selection of valid data for GHG experts
+
+
+#' Title
 #'
-#' @param dataframe a data.frame containing gas measurements (see \code{gastype}
-#'                  below), water vapor measurements (see \code{H2O_col} below)
-#'                  and the following columns: \code{UniqueID}, \code{Etime}, and
-#'                  the precision of the instrument for each gas (see description below).
+#' @name clickflux
 #'
-#' The precision of the instrument is needed to restrict kappa-max
-#' (\code{\link[goFlux]{k.max}}) in the non-linear flux calculation
-#' (\code{\link[goFlux]{HM.flux}}). Kappa-max is inversely proportional to
-#' instrument precision. If the precision of your instrument is unknown, it is
-#' better to use a low value (e.g. 1 ppm) to allow for more curvature, especially
-#' for water vapor fluxes, or very long measurements, that are normally curved.
-#' The default values given for instrument precision are the ones provided by
-#' the manufacturer upon request, for the latest model of this instrument
-#' available at the time of the creation of this function (11-2023).
+#' @param dataframe blabla
+#' @param myauxfile blabla
+#' @param shoulder blabla
+#' @param gastype blabla
+#' @param plot.lim blabla
+#' @param fluxSeparation blabla
+#' @param displayPlots blabla
 #'
-#'
-#' @param myauxfile a data.frame containing auxiliary information needed with the
-#'                  following columns: \code{UniqueID}, \code{start.time}, \code{obs.length},
-#'                  \code{Vtot}, \code{Area}, \code{Pcham}, and \code{Tcham}.
-#' @param shoulder numerical value; time before and after measurement in observation
-#'                 window (seconds). Default is 30 seconds.
-#' @param gastype character string; specifies which column should be used for the
-#'                flux calculations. Must be one of the following: "CO2dry_ppm",
-#'                "CH4dry_ppb", "COdry_ppb", "N2Odry_ppb", "NH3dry_ppb" or "H2O_ppm".
-#' @param plot.lim numerical vector of length 2; sets the Y axis limits in the
-#'                 plots. Default values are set for a typical gas measurement
-#'                 of "CO2dry_ppm" in aquatic ecosystems: \code{plot.lim = c(380,1000)}.
-##' @param fluxSeparation logical; if \code{fluxSeparation = TRUE}, the model proceeds with
-#'                        automatic separation between diffusion and ebullition fluxes.
-#' @param displayPlots logical; if \code{displayPlots = TRUE}, plots showing how
-#'                      the model performs are shown
-#'
-#' @return Returns a data frame with: a \code{UniqueID} per
-#' measurement, 11 columns for the linear model results (linear flux estimate
-#' (\code{\link[goFlux]{LM.flux}}), initial gas concentration
-#' (\code{LM.C0}), final gas concentration (\code{LM.Ct}), slope of linear
-#' regression (\code{LM.slope}), mean absolute error (\code{LM.MAE}), root mean
-#' square error (\code{LM.RMSE}), Akaike's information criterion corrected for
-#' small sample size (\code{LM.AICc}), standard error (\code{LM.SE}), relative
-#' standard error (\code{LM.se.rel}), coefficient of determination (\code{LM.r2}),
-#' and \emph{p-value} (\code{LM.p.val})), 11 columns for the non-linear model
-#' results (non-linear flux estimate (\code{\link[goFlux]{HM.flux}}),
-#' initial gas concentration (\code{HM.C0}), the assumed concentration of
-#' constant gas source below the surface (\code{HM.Ci}), slope at \code{t=0}
-#' (\code{HM.slope}), mean absolute error (\code{HM.MAE}), root mean square error
-#' (\code{HM.RMSE}), Akaike's information criterion corrected for small sample
-#' size (\code{HM.AICc}), standard error (\code{HM.SE}), relative standard error
-#' (\code{HM.se.rel}), coefficient of determination (\code{HM.r2}), and curvature
-#' (kappa; \code{HM.k}), as well as the minimal detectable flux
-#' (\code{\link[goFlux]{MDF}}), the precision of the instrument
-#' (\code{prec}), the flux term (\code{\link[goFlux]{flux.term}}),
-#' kappa-max (\code{\link[goFlux]{k.max}}), the g factor (g.fact;
-#' \code{\link[goFlux]{g.factor}}), the number of observations used
-#' (\code{nb.obs}) and the true initial gas concentration (\code{C0}) and final
-#' gas concentration (\code{Ct}). In case \code{fluxSeparation} was set to 'TRUE',
-#' (\code{dataframe}) also contains information on flux separation, with flux value and
-#' standard deviation estimated for total, diffusive, and ebullition fluxes.
-#'
-#' @references Rheault et al., (2024). goFlux: A user-friendly way to
-#' calculate GHG fluxes yourself, regardless of user experience. \emph{Journal
-#' of Open Source Software}, 9(96), 6393, https://doi.org/10.21105/joss.06393
+#' @return blabla
 #'
 #' @export
 #'
 #' @examples
-#' #' # IMPORTANT! This function makes use of the function graphics::identify()
-#' # which is only supported on screen devices such as X11, windows and quartz.
-#' # It is therefore essential to verify that your system options are compatible
-#' # with this function before running it, to avoid errors. Here is an example
-#' # of how to modify your system options for graphics device:
-#' \dontrun{
-#' default.device <- getOption("device") # save default option
-#' options(device = "X11") # change system option to device = "X11"
-#' options(device = default.device) # revert back to default option }
-#'
-#' # Loading data
-#' load(data_example_1)
-#' mydata$Etime <- as.numeric(mydata$Etime)
-#'
-#' Loading auxfile table
-#' myauxfile = read.csv("data/myauxfile.csv")
-#' myauxfile$start.time <- as.POSIXct(myauxfile$start.time, tz = 'UTC', format="%d/%m/%Y %H:%M")
-#'
-#' CH4_flux.manual <- clickflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 0, gastype = "CH4dry_ppb",
-#' plot.lim = c(1800,max(mydata_all$CH4dry_ppb)), fluxSeparation = T, displayPlots = T)
-#' clickflux <- function(dataframe, myauxfile,
-#'                       shoulder = 0,
-#'                       gastype, plot.lim,
-#'                       fluxSeparation,
-#'                       displayPlots)
-#'
+#' blabla
 #'
 clickflux <- function(dataframe, myauxfile,
                       shoulder = 0,
@@ -152,7 +79,6 @@ clickflux <- function(dataframe, myauxfile,
     stop("'displayPlots' must be TRUE or FALSE")}
 
 
-
   # ----------------------- Function starts here -------------------------###
 
 
@@ -188,7 +114,6 @@ clickflux <- function(dataframe, myauxfile,
       print(p)
     }
 
-    return(best.flux_manID)
   } else { # in  that case we proceed with the separation between diffusion and ebullition
     message("... Please now select DIFFUSION patterns only")
 
@@ -207,23 +132,22 @@ clickflux <- function(dataframe, myauxfile,
                                       gastype = gastype,
                                       plot.lim = plot.lim)
 
-    best.flux_manID <- lapply(seq_along(mydata_ow_corr), flux.separator.loop,
+    best.flux_manID <- lapply(seq_along(mydata_ow_corr), flux_separator.loop,
                               list_of_dataframes = mydata_ow_corr, gastype = gastype, auxfile = myauxfile,
                               criteria = criteria, force.separation = F,
                               mybest.flux = best.flux_manID)%>%
       map_df(., ~as.data.frame(.x))
 
     if(displayPlots){
-      p <- separated.flux.plot(
+      p <- separated_flux_plot(
         flux.results = best.flux_manID, dataframe = mydata_manID,
         gastype = gastype, quality.check = TRUE,
         plot.legend = c("SD"),
         plot.display = c("nb.obs"))
       print(p)
     }
-
-    return(best.flux_manID)
   }
+  return(best.flux_manID)
 }
 
 

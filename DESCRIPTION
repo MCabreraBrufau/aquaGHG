@@ -18,36 +18,26 @@ Description: `aquaGHG` is an easy-to-use and generic package with the
     events. A flux separation method is included, allowing to estimate
     total, diffuse, and ebullition fluxes, along with uncertainty
     assessment.
-License: `use_mit_license()`
+License: MIT + file LICENSE
 Imports: 
-    AICcmodavg,
-    data.table,
     dplyr,
     egg,
-    ggnewscale,
-    ggplot2,
-    ggstar,
     goFlux,
     graphics,
     grDevices,
     grid,
     gridExtra,
     lubridate,
-    minpack.lm,
-    msm,
-    pbapply,
-    plyr,
-    purrr,
-    rjson,
-    rlang,
-    rlist,
-    SimDesign,
-    stats,
     stringr,
     tibble,
     tidyr,
-    toOrdinal,
     utils
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Depends: 
+    R (>= 3.5.0)
+LazyData: true

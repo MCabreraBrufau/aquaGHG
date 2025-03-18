@@ -1,6 +1,17 @@
 
-
-
+#' Title
+#'
+#' @param list blabla
+#' @param path blabla
+#' @param filename blabla
+#'
+#' @return blabla
+#'
+#' @examples
+#' blabla
+#'
+#'
+#' @export
 gg_save_pdf = function(list, path, filename) {
   setwd(path)
   pdf(filename)
