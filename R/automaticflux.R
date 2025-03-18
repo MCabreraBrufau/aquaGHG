@@ -58,9 +58,9 @@
 #' kappa-max (\code{\link[goFlux]{k.max}}), the g factor (g.fact;
 #' \code{\link[goFlux]{g.factor}}), the number of observations used
 #' (\code{nb.obs}) and the true initial gas concentration (\code{C0}) and final
-#' gas concentration (\code{Ct}). In case \code{method} was set to 'TRUE', this
-#' data.frame also contains information on flux separation, with flux value and
-#' standard deviation for total, diffusive, and ebullition fluxes.
+#' gas concentration (\code{Ct}). In case \code{fluxSeparation} was set to 'TRUE',
+#' (\code{dataframe}) also contains information on flux separation, with flux value and
+#' standard deviation estimated for total, diffusive, and ebullition fluxes.
 #'
 #' @references Rheault et al., (2024). goFlux: A user-friendly way to
 #' calculate GHG fluxes yourself, regardless of user experience. \emph{Journal
@@ -77,7 +77,7 @@
 #' myauxfile = read.csv("data/myauxfile.csv")
 #' myauxfile$start.time <- as.POSIXct(myauxfile$start.time, tz = 'UTC', format="%d/%m/%Y %H:%M")
 #'
-#' CH4_flux.auto <- automaticflux(dataframe = mydata_all, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
+#' CH4_flux.auto <- automaticflux(dataframe = mydata, myauxfile = myauxfile, shoulder = 30, gastype = "CH4dry_ppb",
 #'                               fluxSeparation = T, displayPlots = T,
 #'                               method = "trust.it.all")
 #'

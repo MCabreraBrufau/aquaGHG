@@ -1,6 +1,26 @@
-
-
-
+#' Automatic bubble detection
+#'
+#' Local variance of gas measurements within a moving window is calculated and
+#' allows for the identification of probable ebullition events.
+#' This function is mainly used by \code{\link[flux.separator]flux.separator}
+#'
+#' @param time vector; elapsed time over a given incubation.
+#' @param conc vector; gas measurements of same length as \code{time}.
+#' @param window.size integer; the size of the moving window used to calculate
+#' variance.
+#'
+#' @return a data.frame with chunks of elevated variance likely due to ebullition events.
+#'
+#' @seealso See also the function \code{\link[flux.separator]flux.separator} and
+#' \code{\link[plot.incubations]plot.incubations} for more information about usage.
+#'
+#'
+#' @export
+#'
+#' @examples
+#' bubbles <- find_bubbles(time = mydata$Etime,
+#'                         conc = mydata$CH4dry_ppb, window.size = 10)
+#'
 find_bubbles <- function(time, conc, window.size){
   # standarizing conc
   conc_std <- (conc-min(conc))/max(conc)
