@@ -11,7 +11,6 @@
 #' blabla
 #'
 #'
-#' @export
 gg_save_pdf = function(list, path, filename) {
   setwd(path)
   pdf(filename)

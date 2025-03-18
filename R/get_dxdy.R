@@ -8,7 +8,6 @@
 #' @examples
 #' blabla
 #'
-#' @export
   get_dxdy <- function(x,y){
     n <- length(y)
     dx <- (x[n]-x[1])/(n-1)
