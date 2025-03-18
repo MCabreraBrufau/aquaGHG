@@ -80,13 +80,13 @@ the number of observations used for the calculatino of diffusion (\code{nb.obs})
 }
 \description{
 This function calculate diffusion and ebullition fluxes based on measurements
-separation. First, if CH4 is available, the function uses \code{\link[find_bubbles]find_bubbles}
-to check if it makes sense trying to separate fluxes. If \code{\link[find_bubbles]find_bubbles}
-returns NULL, \code{\link[flux_separator]flux_separator} automatically skips the flux separation
+separation. First, if CH4 is available, the function uses \code{find_bubbles}
+to check if it makes sense trying to separate fluxes. If \code{find_bubbles}
+returns NULL, \code{flux_separator} automatically skips the flux separation
 and calculates total fluxes as diffusion only.
-If \code{\link[find_bubbles]find_bubbles} identifies probable bubbling events,
-\code{\link[flux_separator]flux_separator}
-uses function \code{\link[find_first_linear_chunk]find_first_linear_chunk}
+If \code{find_bubbles} identifies probable bubbling events,
+\code{flux_separator}
+uses function \code{find_first_linear_chunk}
 to identify which is the first linear chunk in the measurements. This will be used to calculate diffusion flux
 (\code{diffusion.flux}).
 Total flux (\code{total.flux}) is calculated as the total change of concentration
@@ -94,13 +94,13 @@ during the incubation.
 Ebullition (\code{ebullition.flux}) is calculated as the difference between
 \code{total.flux} and \code{diffusion.flux}.
 If user specifies \code{force.separation = TRUE}, the separation is performed regardless
-of what returned \code{\link[find_bubbles]find_bubbles}.
+of what returned \code{find_bubbles}.
 }
 \examples{
 blabla
 
 }
 \seealso{
-See also the function \code{\link[automaticflux]{automaticflux}} and
-\code{\link[clickflux]{clickflux}} for more information about usage.
+See also the function \code{automaticflux} and
+\code{clickflux} for more information about usage.
 }

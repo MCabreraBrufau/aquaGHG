@@ -1,5 +1,6 @@
 
-#' Title
+#' Automatic flux calculation
+#'
 #' @name automaticflux
 #' @param dataframe blabla
 #' @param myauxfile blabla
@@ -11,11 +12,13 @@
 #' @param method blabla
 #'
 #' @return blabla
-#' @export
 #'
 #' @examples
 #' blabla
-automaticflux <- function(dataframe, myauxfile, shoulder = 0, gastype,
+#'
+#' @export
+#'
+automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
                            fluxSeparation, force.separation,
                            displayPlots, method){
   ## Check dataframe ####
@@ -37,7 +40,7 @@ automaticflux <- function(dataframe, myauxfile, shoulder = 0, gastype,
     if(!is.numeric(shoulder)) stop("'shoulder' must be of class numeric") else{
       if(shoulder < 0) stop("'shoulder' cannot be a negative value")}}
 
-  ### gastype and match in dataframe ####
+  ## gastype and match in dataframe ####
   if(missing(gastype)) stop("'gastype' is required")
   if(!is.null(gastype) & !is.character(gastype)) stop("'gastype' must be a character string")
   if(!any(grepl(paste("\\<", gastype, "\\>", sep = ""),
@@ -81,7 +84,8 @@ automaticflux <- function(dataframe, myauxfile, shoulder = 0, gastype,
 
 
 
-  # ----------------------- Function starts here -------------------------###
+
+
 
   # list of criteria for model selection
   criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
@@ -140,7 +144,7 @@ automaticflux <- function(dataframe, myauxfile, shoulder = 0, gastype,
 
     if(fluxSeparation){
       warning("fluxSeparation ignored because method was set to 'focus.on.linear' and discards non-linear patterns in the observations.
-... Change 'method' to 'trust.it.all' to activate fluxSeparation.")
+              ... Change 'method' to 'trust.it.all' to activate fluxSeparation.")
     }
 
     linear_chunk <- lapply(seq_along(mydata_ow), find_first_linear_chunk.loop,

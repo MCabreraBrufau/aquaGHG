@@ -2,7 +2,19 @@
 % Please edit documentation in R/automaticflux.R
 \name{automaticflux}
 \alias{automaticflux}
-\title{Title}
+\title{Automatic flux calculation}
+\usage{
+automaticflux(
+  dataframe,
+  myauxfile,
+  shoulder,
+  gastype,
+  fluxSeparation,
+  force.separation,
+  displayPlots,
+  method
+)
+}
 \arguments{
 \item{dataframe}{blabla}
 
@@ -24,8 +36,9 @@
 blabla
 }
 \description{
-Title
+Automatic flux calculation
 }
 \examples{
 blabla
+
 }

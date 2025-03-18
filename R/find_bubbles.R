@@ -2,7 +2,7 @@
 #'
 #' Local variance of gas measurements within a moving window is calculated and
 #' allows for the identification of probable ebullition events.
-#' This function is mainly used by \code{\link[flux.separator]flux.separator}
+#' This function is mainly used by \code{flux.separator()}
 #'
 #' @param time vector; elapsed time over a given incubation.
 #' @param conc vector; gas measurements of same length as \code{time}.
@@ -11,8 +11,8 @@
 #'
 #' @return a data.frame with chunks of elevated variance likely due to ebullition events.
 #'
-#' @seealso See also the function \code{\link[flux.separator]flux.separator} and
-#' \code{\link[plot.incubations]plot.incubations} for more information about usage.
+#' @seealso See also the function \code{flux.separator()} and
+#' \code{plot.incubations()} for more information about usage.
 #'
 #'
 #'

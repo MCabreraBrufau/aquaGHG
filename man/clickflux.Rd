@@ -3,6 +3,17 @@
 \name{clickflux}
 \alias{clickflux}
 \title{Title}
+\usage{
+clickflux(
+  dataframe,
+  myauxfile,
+  shoulder,
+  gastype,
+  plot.lim,
+  fluxSeparation,
+  displayPlots
+)
+}
 \arguments{
 \item{dataframe}{blabla}
 

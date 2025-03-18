@@ -20,7 +20,7 @@ a data.frame with chunks of elevated variance likely due to ebullition events.
 \description{
 Local variance of gas measurements within a moving window is calculated and
 allows for the identification of probable ebullition events.
-This function is mainly used by \code{\link[flux.separator]flux.separator}
+This function is mainly used by \code{flux.separator()}
 }
 \examples{
 bubbles <- find_bubbles(time = mydata$Etime,
@@ -28,6 +28,6 @@ bubbles <- find_bubbles(time = mydata$Etime,
 
 }
 \seealso{
-See also the function \code{\link[flux.separator]flux.separator} and
-\code{\link[plot.incubations]plot.incubations} for more information about usage.
+See also the function \code{flux.separator()} and
+\code{plot.incubations()} for more information about usage.
 }

@@ -4,8 +4,8 @@
 
 
 # clearing workspace and console
-rm(list = ls()) # clear workspace
-cat("/014") # clear console
+# rm(list = ls()) # clear workspace
+# cat("/014") # clear console
 
 
 # library(dplyr)

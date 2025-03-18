@@ -3,7 +3,6 @@
 #' Title
 #'
 #' @name clickflux
-#'
 #' @param dataframe blabla
 #' @param myauxfile blabla
 #' @param shoulder blabla
@@ -14,18 +13,16 @@
 #'
 #' @return blabla
 #'
-#' @export
 #'
 #' @examples
 #' blabla
 #'
+#' @export
 clickflux <- function(dataframe, myauxfile,
-                      shoulder = 0,
+                      shoulder,
                       gastype, plot.lim,
                       fluxSeparation,
                       displayPlots){
-
-  # ----------------------- Check arguments -------------------------###
 
   ## Check dataframe ####
   if(missing(dataframe)) stop("'dataframe' is required")
@@ -79,7 +76,9 @@ clickflux <- function(dataframe, myauxfile,
     stop("'displayPlots' must be TRUE or FALSE")}
 
 
-  # ----------------------- Function starts here -------------------------###
+
+
+
 
 
   # making sure we work with the auxfile corresponding to measurements
