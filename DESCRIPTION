@@ -1,12 +1,53 @@
 Package: aquaGHG
-Title: What the Package Does (One Line, Title Case)
+Title: Reproducible Calculation of GHG Fluxes from Static or Floating
+    chamber Measurements in Aquatic Ecosystems
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Camille", "Minaudo", , "camille.minaudo@ub.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0979-9595"))
+Description: `aquaGHG` is an easy-to-use and generic package with the
+    objective to provide reproducible calculation of GHG fluxes from
+    static or floating chamber measurements in aquatic ecosystems.
+    `aquaGHG` provides the option to i) either manually inspect the gas
+    measurements, select the valid observations and proceed with
+    subsequent flux calculation using both linear (LM) and non-linear
+    flux, or ii) automatically process the data without any manual step,
+    from raw incubation timeseries to flux estimates to minimize users
+    biases during data selection.  When CH4 measurements are available in
+    the data input, `aquaGHG` allows for automatic detection of bubbling
+    events. A flux separation method is included, allowing to estimate
+    total, diffuse, and ebullition fluxes, along with uncertainty
+    assessment.
+License: `use_mit_license()`
+Imports: 
+    AICcmodavg,
+    data.table,
+    dplyr,
+    egg,
+    ggnewscale,
+    ggplot2,
+    ggstar,
+    goFlux,
+    graphics,
+    grDevices,
+    grid,
+    gridExtra,
+    lubridate,
+    minpack.lm,
+    msm,
+    pbapply,
+    plyr,
+    purrr,
+    rjson,
+    rlang,
+    rlist,
+    SimDesign,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    toOrdinal,
+    utils
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

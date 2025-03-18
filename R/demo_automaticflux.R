@@ -8,25 +8,6 @@ rm(list = ls()) # clear workspace
 cat("/014") # clear console
 
 
-library(tidyverse)
-library(egg)
-library(goFlux)
-library(devtools)
-library(zoo)
-library(pbapply)
-library(ggnewscale)
-
-source(file = "R/automaticflux.R")
-source(file = "R/get_dxdy.R")
-source(file = "R/join_auxfile_with_data.loop.R")
-source(file = "R/plot.incubations.R")
-source(file = "R/find_first_linear_chunk.R")
-source(file = "R/get_dCdt_density.R")
-source(file = "R/find_bubbles.R")
-source(file = "R/flux.separator.R")
-source(file = "R/separated.flux.plot.R")
-source(file = "R/clickflux.R")
-
 # Loading data
 mydata_all <- NULL
 fs <- list.files(path = "data/",pattern = ".RData", full.names = T)
