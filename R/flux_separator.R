@@ -156,18 +156,15 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
     auxfile_corr$obs.length <- linear_chunk$obs.length
     auxfile_corr$end.time <- auxfile_corr$start.time + auxfile_corr$obs.length
 
-    mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = auxfile_corr, shoulder = 0)
 
+    drop <- c("Tcham","Pcham","Area","Vtot")
+    dataframe_sel <- dplyr::select(dataframe, -which(names(dataframe) %in% drop))
 
+    mydata_ow_corr <- my_obs.win(inputfile = dataframe_sel, auxfile = auxfile_corr, shoulder = 0)
 
     # Join mydata_ow with info on start end incubation
     mydiffusion_auto <- lapply(seq_along(mydata_ow_corr), join_auxfile_with_data.loop, flux.unique = mydata_ow_corr) %>%
       map_df(., ~as.data.frame(.x))
-
-    # Additional auxiliary data required for flux calculation.
-    mydiffusion_auto <- mydiffusion_auto %>%
-      left_join(myauxfile %>% select(UniqueID, Area, Vtot, Tcham, Pcham))
-
 
     # Calculate fluxes
     flux_diffusion <- goFlux(mydiffusion_auto, gastype)

@@ -36,7 +36,7 @@
 #'                "trust.it.all" (the model keeps the entire incubation time series)
 #'                or "keep.it.linear" (the model first automatically selects the
 #'                first linear chunk in the data and discard the rest). Note that
-#'                \code[fluxSeparation] cannot be set to T if \code{method = 'keep.it.linear'}
+#'                \code{fluxSeparation} cannot be set to T if \code{method = 'keep.it.linear'}
 #'
 #' @return Returns a data frame with: a \code{UniqueID} per
 #' measurement, 11 columns for the linear model results (linear flux estimate
@@ -136,10 +136,6 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
     stop("'method' must be of class character and one of the following: 'trust.it.all', 'focus.on.linear'")}
 
 
-
-
-
-
   # list of criteria for model selection
   criteria <- c("g.factor", "kappa", "MDF", "R2", "SE.rel")
 
@@ -147,15 +143,11 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
   myauxfile <- myauxfile[myauxfile$UniqueID %in% unique(dataframe$UniqueID),]
 
   # split measurements by UniqueID
-  mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
+  mydata_ow <- my_obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
 
   # Join mydata_ow with info on start end incubation
   mydata_auto <- lapply(seq_along(mydata_ow), join_auxfile_with_data.loop, flux.unique = mydata_ow) %>%
     map_df(., ~as.data.frame(.x))
-
-  # Additional auxiliary data required for flux calculation.
-  mydata_auto <- mydata_auto %>%
-    left_join(myauxfile %>% select(UniqueID, Area, Vtot, Tcham, Pcham))
 
   # Calculate fluxes
   flux_auto <- goFlux(dataframe = mydata_auto, gastype)
@@ -166,7 +158,9 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
 
 
   if (method == "trust.it.all"){
+
     if(!fluxSeparation){
+
       if(displayPlots){
         p <- flux.plot(
           flux.results = best.flux_auto, dataframe = mydata_auto,
@@ -175,6 +169,7 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
           plot.display = c("Ci", "C0", "MDF", "prec", "nb.obs", "flux.term"))
         print(p)
       }
+
     } else { # in  that case we proceed with the separation between diffusion and ebullition
 
       best.flux_auto <- lapply(seq_along(mydata_ow), flux_separator.loop,
@@ -214,7 +209,7 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
       myauxfile_corr.tmp$end.time <- linear_chunk$start.time[ind] + linear_chunk$obs.length[ind]
       myauxfile_corr <- rbind(myauxfile_corr, myauxfile_corr.tmp)
     }
-    mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
+    mydata_ow_corr <- my_obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
 
     # Join mydata_ow with info on start end incubation
     mydiffusion_auto <- lapply(seq_along(mydata_ow_corr), join_auxfile_with_data.loop, flux.unique = mydata_ow_corr) %>%

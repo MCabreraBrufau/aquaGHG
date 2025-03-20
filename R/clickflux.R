@@ -143,7 +143,7 @@ clickflux <- function(dataframe, myauxfile,
 
   n_incubations <- length(unique(dataframe$UniqueID))
 
-  mydata_ow <- obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
+  mydata_ow <- my_obs.win(inputfile = dataframe, auxfile = myauxfile, shoulder = shoulder)
 
   message("... Please click on start and end points of VALID OBSERVATIONS")
   mydata_manID <- click.peak2(mydata_ow, seq = seq(1,n_incubations),
@@ -182,7 +182,7 @@ clickflux <- function(dataframe, myauxfile,
       myauxfile_corr.tmp$end.time <- first(mydata_manID$end.time_corr[mydata_manID$UniqueID==id])
       myauxfile_corr <- rbind(myauxfile_corr, myauxfile_corr.tmp)
     }
-    mydata_ow_corr <- obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
+    mydata_ow_corr <- my_obs.win(inputfile = dataframe, auxfile = myauxfile_corr, shoulder = 0)
 
     mydata_diffusionID <- click.peak2(mydata_ow_corr, seq = seq(1,n_incubations),
                                       gastype = gastype,

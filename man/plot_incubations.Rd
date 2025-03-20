@@ -7,7 +7,10 @@
 plot_incubations(dataframe)
 }
 \arguments{
-\item{dataframe}{}
+\item{dataframe}{a data.frame containing gas measurements (see \code{gastype}
+below), water vapor measurements (see \code{H2O_col} below)
+and the following columns: \code{UniqueID}, \code{Etime}, and
+the precision of the instrument for each gas (see description below).}
 }
 \value{
 a plot for each incubation present in \code{dataframe} with all gas

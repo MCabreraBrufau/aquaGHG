@@ -56,7 +56,7 @@ process the gas measurements. Must be one of the following:
 "trust.it.all" (the model keeps the entire incubation time series)
 or "keep.it.linear" (the model first automatically selects the
 first linear chunk in the data and discard the rest). Note that
-\code\link{fluxSeparation} cannot be set to T if \code{method = 'keep.it.linear'}}
+\code{fluxSeparation} cannot be set to T if \code{method = 'keep.it.linear'}}
 }
 \value{
 Returns a data frame with: a \code{UniqueID} per
