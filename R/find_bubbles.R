@@ -22,11 +22,16 @@
 #'
 #' @export
 find_bubbles <- function(time, conc, window.size){
+
+  is_dupl_time <- duplicated(time)
+  time <- time[!is_dupl_time]
+  conc <- conc[!is_dupl_time]
+
   # standarizing conc
   conc_std <- (conc-min(conc))/max(conc)
 
   x = seq(min(time),max(time),1)
-  conc_std <- approx(time, conc_std, xout = x, method = "linear", rule = 2)$y
+  conc_std <- approx(x = time, conc_std, xout = x, method = "linear", rule = 2)$y
 
 
   # defining start and end for moving window
