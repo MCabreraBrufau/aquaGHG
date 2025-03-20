@@ -19,19 +19,6 @@ Description: `aquaGHG` is an easy-to-use and generic package with the
     total, diffuse, and ebullition fluxes, along with uncertainty
     assessment.
 License: MIT + file LICENSE
-Imports: 
-    dplyr,
-    egg,
-    goFlux,
-    graphics,
-    grDevices,
-    grid,
-    gridExtra,
-    lubridate,
-    stringr,
-    tibble,
-    tidyr,
-    utils
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
@@ -41,3 +28,13 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.5.0)
 LazyData: true
+Imports: 
+    dplyr,
+    egg,
+    ggnewscale,
+    ggplot2,
+    goFlux,
+    lubridate,
+    pbapply,
+    purrr,
+    tidyr
