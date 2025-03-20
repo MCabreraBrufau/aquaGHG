@@ -26,7 +26,14 @@ find_first_linear_chunk <- function(dataframe, gastype, length.min){
     ind_not_1 <- which(diff(ind_bests)>10)
     if(length(ind_not_1)==0){
       ind_best <- which.max(df.stats$r2)
-    } else {ind_best <- ind_bests[min(ind_not_1)-1]}
+    } else {
+      if(min(ind_not_1)>1){
+        ind_best <- ind_bests[min(ind_not_1)-1]
+      } else {
+        ind_best <- which.max(df.stats$r2[-ind_not_1])
+        }
+
+      }
     t_selected <- df.stats$t[ind_best]
 
     # p_r2 <- ggplot(df.stats, aes(t, r2))+geom_point()+theme_article()+xlab("time [secs]")+
