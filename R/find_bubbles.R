@@ -49,9 +49,6 @@ find_bubbles <- function(time, conc, window.size){
   # defining threshold
   thresh <- max(1e-4, quantile(df.stats$var, 0.7))
 
-  # plot(df.stats$t, df.stats$var)
-  # points(df.stats$t[df.stats$var > thresh], df.stats$var[df.stats$var > thresh], col='red')
-
   # finding chunks with high variance
   vect <- df.stats$var > thresh
 
@@ -70,15 +67,44 @@ find_bubbles <- function(time, conc, window.size){
     chunks <- data.frame(start = jumps[seq(1,length(jumps),2)],
                          end = jumps[seq(2,length(jumps),2)])
 
+    # if there is less than 10 seconds from one chunk to the next, we group them
+    if(dim(chunks)[1]>1){
+      gap <- NA*chunks$start
+
+      chunks_grouped <- chunks[1,]
+      for(i in seq(2,length(chunks$start))){
+        gap <- (chunks$start[i]-chunks$end[i-1])
+
+        if (gap > 10){
+          chunks_grouped <- rbind(chunks_grouped, chunks[i,])
+        } else {
+          j = dim(chunks_grouped)[1]
+          chunks_grouped$end[j] <- chunks$end[i]
+        }
+      }
+      chunks <- chunks_grouped
+    }
+
     # we discard chunks of less than 5 datapoints
     chunks <- chunks[which(chunks$end-chunks$start > 5),]
+
     if(dim(chunks)[1] == 0){
       chunks <- NULL
     }
-
-    # plot(x, conc_std)
-    # abline(v = c(chunks$start, chunks$end), col='red')
   }
+  # p1 <- ggplot(data = data.frame(time = time, conc = conc, conc_std = conc_std))+geom_path(aes(time, conc))+theme_bw()+xlim(c(0,600))+
+  #   xlab("Elapsed time")+ylab("CH4dry [ppb]")+
+  #   annotate("rect", fill = "red", alpha = 0.25,
+  #            xmin = chunks$start, xmax = chunks$end,
+  #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
+  # p2 <- ggplot(data = df.stats)+geom_path(aes(t, var))+theme_bw()+
+  #   xlab("Elapsed time")+ylab("Local variance")+
+  #   ggtitle(paste0("threshold = ",thresh))+xlim(c(0,600))+
+  #   annotate("rect", fill = "red", alpha = 0.25,
+  #            xmin = chunks$start, xmax = chunks$end,
+  #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
+  #
+  # ggarrange(p1,p2, ncol = 1, align = "v")
 
   return(chunks)
 }
