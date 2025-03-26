@@ -92,7 +92,7 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
   mybest.flux <- mybest.flux[mybest.flux$UniqueID == id,]
 
   # Initializing variables
-  mybest.flux$total.flux <- mybest.flux$ebullition.flux <- mybest.flux$diffusion.flux <-
+  mybest.flux$total.flux <- mybest.flux$ebullition.flux <- mybest.flux$diffusion.flux <- mybest.flux$start_diffusion <-
     mybest.flux$obs.length_diffusion <- mybest.flux$total.flux.SD <-
     mybest.flux$diffusion.flux.SD <- mybest.flux$ebullition.flux.SD <- NA
 
@@ -109,6 +109,7 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
   if (is.null(bubbles) & force.separation==FALSE){
     warning(paste0("For ",id, ", no bubbles were found. Total flux is attributed to diffusion only"))
 
+    mybest.flux$start_diffusion <- auxfile_corr$start.time
     mybest.flux$obs.length_diffusion <- auxfile_corr$obs.length
 
     mybest.flux$total.flux <- mybest.flux$best.flux
@@ -122,8 +123,17 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
     if (is.null(bubbles)){warning(paste0("For ",id, ", no bubbles were found but flux separation was forced with `force.separation = TRUE`.
                                          Consider setting force.separation to FALSE."))}
 
+    dataframe$flag_bubbles <- FALSE
+    for(b in seq_along(bubbles$start)){
+      dataframe$flag_bubbles[seq(bubbles$start[b], bubbles$end[b])] <- TRUE
+    }
+
     # Automatically identify the first linear chunk
-    linear_chunk <- find_first_linear_chunk(dataframe = dataframe, gastype = gastype, length.min = 10)
+    linear_chunk <- find_first_linear_chunk(dataframe = dataframe[!dataframe$flag_bubbles,], gastype = gastype, length.min = 20)
+
+    # new start for dataframe
+    dataframe <- dataframe[dataframe$POSIX.time>=linear_chunk$start.time,]
+    dataframe$Etime <- as.numeric(dataframe$POSIX.time) - min(as.numeric(dataframe$POSIX.time))
 
     # computing density probability of first derivative
     d_df <- get_dCdt_density(dataframe, gastype)
@@ -175,6 +185,7 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
     # names(mybest.flux)[-1] <- paste0(names(mybest.flux)[-1],"_diffusion")
 
     # adding information of data used for diffusion model
+    mybest.flux$start_diffusion <- linear_chunk$start.time
     mybest.flux$obs.length_diffusion <- linear_chunk$obs.length
 
     mybest.flux$total.flux <- (Cf-C0)/incubation_time*mybest.flux_diffusion$flux.term # nmol/m2/s
