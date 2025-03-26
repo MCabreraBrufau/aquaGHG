@@ -469,10 +469,12 @@ separated_flux_plot <- function(flux.results, dataframe, gastype, shoulder = 30,
     flag <- data_split[[f]]$flag
     plot_data <- cbind.data.frame(gas_meas, Etime, flag)
     plot_data$flag_diff <- F
-    plot_data$flag_diff[which(plot_data$Etime < data_split[[f]]$obs.length_diffusion)] <- T
+    plot_data$flag_diff[which(data_split[[f]]$POSIX.time > unique(data_split[[f]]$start_diffusion) &
+                                data_split[[f]]$POSIX.time < unique(data_split[[f]]$start_diffusion) + unique(data_split[[f]]$obs.length_diffusion))] <- T
 
     LM.slope <- unique(data_corr[[f]]$LM.slope)
-    LM.C0 <- unique(data_corr[[f]]$LM.C0)
+    # reporting C0 to t = 0
+    LM.C0 <- unique(data_corr[[f]]$LM.C0) - LM.slope*(as.numeric(unique(data_split[[f]]$start_diffusion)) - min(as.numeric(data_split[[f]]$POSIX.time)))
     UniqueID <- unique(data_corr[[f]]$UniqueID)
     HM_mod <- data_split[[f]]$HM_mod
 
