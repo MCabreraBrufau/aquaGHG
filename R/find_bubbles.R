@@ -28,7 +28,9 @@ find_bubbles <- function(time, conc, window.size){
   conc <- conc[!is_dupl_time]
 
   # standarizing conc
-  conc_std <- (conc-min(conc))/max(conc)
+  # conc_std <- (conc-min(conc))/(max(conc)-min(conc))
+  conc_std <- conc/mean(conc)
+
 
   x = seq(min(time),max(time),1)
   conc_std <- approx(x = time, conc_std, xout = x, method = "linear", rule = 2)$y
@@ -91,21 +93,21 @@ find_bubbles <- function(time, conc, window.size){
     if(dim(chunks)[1] == 0){
       chunks <- NULL
     }
-  }
-  # p1 <- ggplot(data = data.frame(time = time, conc = conc, conc_std = conc_std))+geom_path(aes(time, conc))+theme_bw()+xlim(c(0,600))+
-  #   xlab("Elapsed time")+ylab("CH4dry [ppb]")+
-  #   annotate("rect", fill = "red", alpha = 0.25,
-  #            xmin = chunks$start, xmax = chunks$end,
-  #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
-  # p2 <- ggplot(data = df.stats)+geom_path(aes(t, var))+theme_bw()+
-  #   xlab("Elapsed time")+ylab("Local variance")+
-  #   ggtitle(paste0("threshold = ",thresh))+xlim(c(0,600))+
-  #   annotate("rect", fill = "red", alpha = 0.25,
-  #            xmin = chunks$start, xmax = chunks$end,
-  #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
-  #
-  # ggarrange(p1,p2, ncol = 1, align = "v")
 
+    # p1 <- ggplot(data = data.frame(time = time, conc = conc, conc_std = conc_std))+geom_path(aes(time, conc))+theme_bw()+xlim(c(0,600))+
+    #   xlab("Elapsed time")+ylab("CH4dry [ppb]")+
+    #   annotate("rect", fill = "red", alpha = 0.25,
+    #            xmin = chunks$start, xmax = chunks$end,
+    #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
+    # p2 <- ggplot(data = df.stats)+geom_path(aes(t, var))+theme_bw()+
+    #   xlab("Elapsed time")+ylab("Local variance")+
+    #   ggtitle(paste0("threshold = ",thresh))+xlim(c(0,600))+
+    #   annotate("rect", fill = "red", alpha = 0.25,
+    #            xmin = chunks$start, xmax = chunks$end,
+    #            ymin = rep(-Inf, dim(chunks)[1]), ymax = rep(Inf, dim(chunks)[1]))
+    #
+    # ggarrange(p1,p2, ncol = 1, align = "v")
+  }
   return(chunks)
 }
 
