@@ -5,7 +5,7 @@ find_first_linear_chunk <- function(dataframe, gastype, length.min){
   # dataframe <- mydata_all[mydata_all$UniqueID==unique(mydata_all$UniqueID)[3],]
 
   mydf <- data.frame(POSIX.time = dataframe$POSIX.time,
-                     time = as.numeric(dataframe$Etime),
+                     time = as.numeric(dataframe$POSIX.time) - min(as.numeric(dataframe$POSIX.time)),
                      conc = dataframe[[gastype]])
 
   # identify possible local minimum in first half of incubation
