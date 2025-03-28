@@ -92,9 +92,9 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
   mybest.flux <- mybest.flux[mybest.flux$UniqueID == id,]
 
   # Initializing variables
-  mybest.flux$total.flux <- mybest.flux$ebullition.flux <- mybest.flux$diffusion.flux <- mybest.flux$start_diffusion <-
-    mybest.flux$obs.length_diffusion <- mybest.flux$total.flux.SD <-
-    mybest.flux$diffusion.flux.SD <- mybest.flux$ebullition.flux.SD <- NA
+  mybest.flux$total.flux <- mybest.flux$ebullition.flux <- mybest.flux$diffusion.flux <-
+    mybest.flux$start_diffusion <- mybest.flux$obs.length_diffusion <-
+    mybest.flux$total.flux.SD <- mybest.flux$diffusion.flux.SD <- mybest.flux$ebullition.flux.SD <- NA
 
   # if CH4 in dataframe, check bubbles
   if(any(grepl(paste0("\\<CH4dry_ppb\\>"), names(dataframe)))){
@@ -229,7 +229,7 @@ flux_separator <- function(dataframe, gastype, auxfile, criteria, force.separati
 flux_separator.loop <-  function(x, list_of_dataframes, gastype, auxfile, criteria, force.separation, mybest.flux) {
 
   # function to apply in the loop. Adapt parameters to your needs.
-  mybest.flux <- flux_separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, mybest.flux)
+  myseparated.flux <- flux_separator(dataframe = list_of_dataframes[[x]], gastype, auxfile, criteria, force.separation, mybest.flux)
 
-  return(mybest.flux)
+  return(myseparated.flux)
 }
