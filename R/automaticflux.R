@@ -156,7 +156,13 @@ automaticflux <- function(dataframe, myauxfile, shoulder, gastype,
   # based on a list of criteria
   best.flux_auto <- best.flux(flux_auto, criteria)
 
+  #MIGUEL: When HM.flux results in NA, flux.plot functions fails (error: flux.plot(flux.results = best.flux_auto, dataframe = mydata_auto, :   #'HM.flux' in 'flux.results' must be of class numeric) )
+  #MIGUEL: we try to work arround this by forcing as.numeric to the HM result columns that require numeric class
+  best.flux_auto<- best.flux_auto %>% 
+    mutate(across(c(HM.flux, HM.C0,HM.Ci,HM.k,HM.MAE,HM.RMSE,HM.AICc,HM.se.rel,HM.SE,HM.r2,g.fact), as.numeric))
 
+  
+  
   if (method == "trust.it.all"){
 
     if(!fluxSeparation){
